@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-import argparse
-
 # ~~~~~==============   HOW TO RUN   ==============~~~~~
 # 1) Configure things in CONFIGURATION section
 # 2) Change permissions: chmod +x bot.py
@@ -18,7 +16,7 @@ import json
 team_name="SEEKINGALPHA"
 # This variable dictates whether or not the bot is connecting to the prod
 # or test exchange. Be careful with this switch!
-test_mode = False
+test_mode = True
 
 # This setting changes which test exchange is connected to.
 # 0 is prod-like
@@ -57,8 +55,65 @@ def bond_strategy(exchange):
     print("BOND STRATEGY ------------------")
  
     size = 100
-    write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size })
-    write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": size })
+    write_to_exchange(exchange, { "type": "add", "order_id": 20, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size })
+    write_to_exchange(exchange, { "type": "add", "order_id": 22, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": size })
+
+import sys
+
+# initialize buy value to very low - i.e. market buys for low
+# initialize sell value to very high - i.e. market sells for very high
+main_book = {
+    "GOOG": { "buy": { "price": -sys.maxint - 1, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } },
+    "MSFT": { "buy": { "price": -sys.maxint - 1, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } },
+    "AAPL": { "buy": { "price": -sys.maxint - 1, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } },
+}
+
+def update_book(info, book):
+    if info["type"] == "book":
+
+        symbol = info["symbol"]
+        if not (symbol in ["GOOG", "MSFT", "AAPL"]): return
+
+        # sell - get lowest selling price on our book
+        for order in info["sell"]:
+            if info["sell"][0] < book[symbol]["sell"]["price"]:
+                book[symbol]["sell"]["price"] = info["sell"][0]
+                book[symbol]["sell"]["quantity"] = info["sell"][1]
+
+        # buy - get highest buy price on our book
+        for order in info["buy"]:
+            if info["buy"][0] > book[symbol]["buy"]["price"]:
+                book[symbol]["buy"]["price"] = info["buy"][0]
+                book[symbol]["buy"]["quantity"] = info["buy"][1]
+
+def portfolio_balance(exchange, portfolio):
+    # preform trades
+
+    # GOOG
+    # if someone's sell order is less than someone elses buy order, then execute
+    if portfolio["GOOG"]["sell"] < portfolio["GOOG"]["buy"]:
+        quantity = min(portfolio["GOOG"]["sell"]["quantity"], portfolio["GOOG"]["sell"]["quantity"])
+
+        # buy for what market will sell
+        write_to_exchange(exchange, {
+            "type": "add",
+            "order_id": 10,
+            "symbol": "GOOG",
+            "dir": "BUY",
+            "price": portfolio["GOOG"]["sell"],
+            "size": quantity 
+        })
+
+        # sell for what market will buy
+        write_to_exchange(exchange, {
+            "type": "add",
+            "order_id": 12,
+            "symbol": "GOOG",
+            "dir": "SELL",
+            "price": portfolio["GOOG"]["buy"],
+            "size": quantity 
+        })
+
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
@@ -72,11 +127,19 @@ def main():
 
     count = 0
     while True:
+
+        # call bond strat once
         count = count + 1
         if count == 1:
             bond_strategy(exchange)
+
         exchange_reply = read_from_exchange(exchange)
         print("The exchange replied:", exchange_reply, file=sys.stderr)
+
+        # continuous stock strat
+        update_book(exchange_reply, main_book)
+        portfolio_balance(exchange, main_book)
+        print(main_book)
 
     """
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
@@ -91,15 +154,5 @@ def main():
     print("The exchange replied:", hello_from_exchange, file=sys.stderr)
     """
 
-
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('integers', metavar='N', type=int, nargs='+',
-                        help='an integer for the accumulator')
-    parser.add_argument('-t', dest='test_mode', action='store_const',
-                        const=sum, default=max,
-                        help='sum the integers (default: find the max)')
-
-    args = parser.parse_args()
-
     main()

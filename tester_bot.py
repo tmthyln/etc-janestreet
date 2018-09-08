@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-import argparse
-
 # ~~~~~==============   HOW TO RUN   ==============~~~~~
 # 1) Configure things in CONFIGURATION section
 # 2) Change permissions: chmod +x bot.py
@@ -18,7 +16,7 @@ import json
 team_name="SEEKINGALPHA"
 # This variable dictates whether or not the bot is connecting to the prod
 # or test exchange. Be careful with this switch!
-test_mode = False
+test_mode = True
 
 # This setting changes which test exchange is connected to.
 # 0 is prod-like
@@ -72,9 +70,7 @@ def main():
 
     count = 0
     while True:
-        count = count + 1
-        if count == 1:
-            bond_strategy(exchange)
+        bond_strategy(exchange)
         exchange_reply = read_from_exchange(exchange)
         print("The exchange replied:", exchange_reply, file=sys.stderr)
 
@@ -91,15 +87,5 @@ def main():
     print("The exchange replied:", hello_from_exchange, file=sys.stderr)
     """
 
-
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('integers', metavar='N', type=int, nargs='+',
-                        help='an integer for the accumulator')
-    parser.add_argument('-t', dest='test_mode', action='store_const',
-                        const=sum, default=max,
-                        help='sum the integers (default: find the max)')
-
-    args = parser.parse_args()
-
     main()
