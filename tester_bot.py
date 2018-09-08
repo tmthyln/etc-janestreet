@@ -62,14 +62,13 @@ bond_id = 24000
 
 def bond_strategy(exchange):
     # always buy bond for < 1000 and sell bond for > 1000
-    print("BOND STRATEGY ------------------")
     global bond_buy_size, bond_sell_size, bond_id
 
     buy_this_round = 100 - bond_buy_size
     sell_this_round = 100 - bond_buy_size
 
     if buy_this_round > 0:
-        write_to_exchange(exchange, { "type": "add", "order_id": bond_id, "symbol": "BOND", "dir": "BUY", "price": 999.5, "size": buy_this_round })
+        write_to_exchange(exchange, { "type": "add", "order_id": bond_id, "symbol": "BOND", "dir": "BUY", "price": 999, "size": buy_this_round })
         bond_buy_size += buy_this_round
     if sell_this_round > 0:
         write_to_exchange(exchange, { "type": "add", "order_id": bond_id + 1, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": sell_this_round})
@@ -98,6 +97,7 @@ goog_past_midpoints = []
 goog_should_buy = False
 goog_should_sell = False
 
+
 def goog_strategy(exchange):
     global goog_past_midpoints
 
@@ -108,8 +108,12 @@ def goog_strategy(exchange):
 
 def goog_update(update):
 
-    if update['type'] != "book":
-        pass
+    if update['type'] != 'trade':
+        return
+    if update['symbol'] != 'GOOG':
+        return
+
+    goog_past_midpoints.append(update['price'])
 
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
@@ -127,7 +131,7 @@ def main():
 
         # reply from server
         exchange_reply = read_from_exchange(exchange)
-        print("The exchange replied:", exchange_reply, file=sys.stderr)
+        # print("The exchange replied:", exchange_reply, file=sys.stderr)
 
         # update strategies
         bond_update(exchange_reply)
