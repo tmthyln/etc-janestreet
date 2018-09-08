@@ -164,6 +164,7 @@ def main():
 
         # continuous stock strat
         update_book(exchange_reply, main_book)
+        baba_arbitrage(exchange, main_book)
         print(main_book)
 
     """
