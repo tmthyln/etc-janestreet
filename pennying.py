@@ -58,7 +58,7 @@ def bond_strategy(exchange):
     write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size })
     write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": size })
 
-def trade(update):
+def trade(exchange, update):
 
     if update["type"] == "book" and update["symbol"] in ["GOOG", "MSFT", "AAPL"]:
 
@@ -91,7 +91,7 @@ def main():
     while True:
 
         exchange_reply = read_from_exchange(exchange)
-        trade(exchange_reply)
+        trade(exchange, exchange_reply)
         #print("The exchange replied:", exchange_reply, file=sys.stderr)
 
 
