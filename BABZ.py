@@ -129,16 +129,18 @@ def trade(exchange):
 
         # initial trade to buy or sell BABA
         buy_order_id, buy_price = new_order("BUY", "BABA", BABA_buy + 1)
-        sell_order_id, sell_price = new_order("SELL", "BABA", BABA_sell - 1)
         write_to_exchange(exchange, { 
             "type": "add", "order_id": buy_order_id, "symbol": "BABA",
             "dir": "BUY", "price": buy_price, "size": 1 # +1 to gauruntee that someone will sell
         })
+        need_to_process.append(buy_order_id)
+        """
+        sell_order_id, sell_price = new_order("SELL", "BABA", BABA_sell - 1)
         write_to_exchange(exchange, { 
             "type": "add", "order_id": sell_order_id, "symbol": "BABA",
             "dir": "BUY", "price": sell_price, "size": 1 # -1 to gauruntee that someone will buy
         })
-        need_to_process.append(buy_order_id)
+        """
         need_to_process.append(sell_order_id)
 
         print("DID SOMETHING WITH BABA", buy_order_id, sell_order_id)
