@@ -65,6 +65,7 @@ def update_data(update):
         old_avg = moving_avgs[symbol]["value"]
         old_cnt = moving_avgs[symbol]["count"]
         moving_avgs[symbol]["value"] = old_avg * old_cnt / (old_cnt + 1) + (update["price"] / (old_cnt + 1))
+        moving_avgs[symbol]["count"] = moving_avgs[symbol]["count"] + 1
 
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
