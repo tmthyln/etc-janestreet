@@ -52,8 +52,8 @@ def write_and_read(exchange, command):
 
 # record 20 most recent prices for each to calculate means
 history = {
-    "BABZ": { "buy_prices": [], "sell_prices": [] },
-    "BABA": { "buy_prices": [], "sell_prices": [] }
+    "BABZ": { "buy": [], "sell": [] },
+    "BABA": { "buy": [], "sell": [] }
 }
 # our positions
 positions = {
