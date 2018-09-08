@@ -72,11 +72,12 @@ def update_data(exchange, update):
     symbol = update["symbol"]
 
     # update midpoint averages
-    old_avg = moving_avgs[symbol]["value"]
-    old_cnt = moving_avgs[symbol]["count"]
-    new_price = update['buy'][0][0] + (update['sell'][0][0] - update['buy'][0][0]) / 2
-    moving_avgs[symbol]["value"] = old_avg * old_cnt / (old_cnt + 1) + (new_price / (old_cnt + 1))
-    moving_avgs[symbol]["count"] = moving_avgs[symbol]["count"] + 1
+    if len(update['sell']) > 0 and len(update['buy']) > 0:
+        old_avg = moving_avgs[symbol]["value"]
+        old_cnt = moving_avgs[symbol]["count"]
+        new_price = update['buy'][0][0] + (update['sell'][0][0] - update['buy'][0][0]) / 2
+        moving_avgs[symbol]["value"] = old_avg * old_cnt / (old_cnt + 1) + (new_price / (old_cnt + 1))
+        moving_avgs[symbol]["count"] = moving_avgs[symbol]["count"] + 1
 
     # preform trades
     if len(update["sell"]) > 0 and update["sell"][0][0] < moving_avgs[symbol]["value"]:
