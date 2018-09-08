@@ -89,9 +89,11 @@ def fme_trade(exchange, update):
     if buy_this_round > 0:
         write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": symbol, "dir": "BUY", "price": fmv_midpoint(symbol) - 2, "size": 1})
         stocks[symbol]["buy_amt"] += buy_this_round
+        print('actually bought')
     if sell_this_round > 0:
         write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": symbol, "dir": "SELL", "price": fmv_midpoint(symbol) + 2, "size": 1})
         stocks[symbol]["sell_amt"] += sell_this_round
+        print('actually sold')
 
 
 def fme_update(update):
