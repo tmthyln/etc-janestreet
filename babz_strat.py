@@ -118,7 +118,5 @@ def main():
     	update_book(exchange_reply, main_book)
     	print(main_book, end='')
 
-    """
-
 if __name__ == "__main__":
     main()
