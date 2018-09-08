@@ -94,7 +94,7 @@ def trade(exchange):
 
     global history, orders
 
-    if len(history["BABZ"]["buy"]) > 0 and len(history["BABA"]["buy"]) > 0 and len(history["BABZ"]["sell"]) > 0 and len(history["BABA"]["sell"]) > 0: return
+    if len(history["BABZ"]["buy"]) != 20 and len(history["BABA"]["buy"]) != 20 and len(history["BABZ"]["sell"]) != 20 and len(history["BABA"]["sell"]) != 20: return
 
     # get means of BABZ, BABA buy and sell
     BABA_buy = sum(history["BABA"]["buy"]) / len(history["BABA"]["buy"])
