@@ -57,7 +57,28 @@ moving_avgs = {
     "AAPL": { "value": 0, "count": 0, "buy_amt": 0, "sell_amt": 0 }
 }
 
+bought = { "GOOG": 0, "MSFT": 0, "AAPL": 0 }
+order_hist = {}
+curr_order = 0
+
+def new_order(ord_type, ticker):
+    curr_order = curr_order + 1
+    order_hist[curr_order] = { "type": ord_type, "ticker": ticker }
+    return curr_order
+
 def trade(exchange, update):
+
+    """
+    Improvements:
+    1. never be negative in a company (negative shares)
+    """
+
+    # NO MORE NEGATIVE HOLDINGS
+    if update["type"] == "ack":
+        ord_type = order_hist[update["order_id"]]["type"]
+        ticker = order_hist[update["order_id"]]["ticker"]
+        if ord_type == "BUY": bought[ticker] = bought[ticker] + 1
+        if ord_type == "SELL": bought[ticker] = bought[ticker] - 1
 
     # do trade
     if update["type"] == "book" and update["symbol"] in ["GOOG", "MSFT", "AAPL"] and len(update["buy"] + update["sell"]) > 0:
@@ -75,8 +96,14 @@ def trade(exchange, update):
 
         # execute trade
         # buy at 1 below fair market, sell at 1 above fair market - same as bond strategy
-        write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": symbol, "dir": "BUY", "price": fair_price - 1, "size": 1 })
-        write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": symbol, "dir": "SELL", "price": fair_price + 1, "size": 1 })
+        write_to_exchange(exchange, {
+            "type": "add", "order_id": new_order("BUY"), "symbol": symbol, "dir": "BUY", "price": fair_price - 1, "size": 1
+        })
+        if (bought[symbol] > 0):
+            write_to_exchange(exchange, {
+                "type": "add", "order_id": new_order("SELL"), "symbol": symbol, "dir": "SELL", "price": fair_price + 1, "size": 1
+            })
+
 
     """
     # update data
