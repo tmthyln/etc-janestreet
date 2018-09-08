@@ -157,13 +157,13 @@ def fme_trade(exchange, update):
 
     # buy or sell as necessary
     if buy_this_round > 0 and random.random() < 1.0:
-        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "BUY", "price": int(fmv_midpoint(symbol) - 1), "size": 1})
+        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "BUY", "price": int(fmv_midpoint(symbol) - 2), "size": 1})
         orders.append(stocks_id)
         stocks[symbol]["buy_amt"] += buy_this_round
         stocks_id += 1
         print('actually bought')
-    if sell_this_round > 0 and random.random() < 0.5:
-        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "SELL", "price": int(fmv_midpoint(symbol) + 1), "size": 1})
+    if sell_this_round > 0 and random.random() < 0.25:
+        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "SELL", "price": int(fmv_midpoint(symbol) + 2), "size": 1})
         orders.append(stocks_id)
         stocks[symbol]["sell_amt"] += sell_this_round
         stocks_id += 1
