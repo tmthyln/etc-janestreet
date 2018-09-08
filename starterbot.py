@@ -41,11 +41,29 @@ def write_to_exchange(exchange, obj):
 def read_from_exchange(exchange):
     return json.loads(exchange.readline())
 
+# ~~~~~============== HELPER FUNCTIONS ==============~~~~~
+
+def write_and_read(command):
+    write_to_exchange(exchange, command)
+    exchange_reply = read_from_exchange(exchange)
+    print("The exchange replied:", exchange_reply, file=sys.stderr)
+
+# ~~~~~============== TRADING LOGIC ==============~~~~~
+
+def bond_strategy():
+    # always buy bond for < 1000 and sell bond for > 1000
+    order_id = 1
+    #size = 1
+    return {"type": "add", "order_id": order_id, "symbol": "BOND", "dir": "BUY", "price": 999, "size": 1}
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
 def main():
     exchange = connect()
+    write_and_read({"type": "hello", "team": team_name.upper()})
+    write_and_read(bond_strategy())
+
+    """
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
     hello_from_exchange = read_from_exchange(exchange)
     # A common mistake people make is to call write_to_exchange() > 1
@@ -53,6 +71,10 @@ def main():
     # Since many write messages generate marketdata, this will cause an
     # exponential explosion in pending messages. Please, don't do that!
     print("The exchange replied:", hello_from_exchange, file=sys.stderr)
+
+    write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
+    print("The exchange replied:", hello_from_exchange, file=sys.stderr)
+    """
 
 if __name__ == "__main__":
     main()
