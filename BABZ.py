@@ -10,6 +10,7 @@ from __future__ import print_function
 import sys
 import socket
 import json
+import numpy as np
 
 # ~~~~~============== CONFIGURATION  ==============~~~~~
 # replace REPLACEME with your team name!
@@ -90,16 +91,19 @@ def track(exchange, update):
         history[symbol]["buy"] = history[symbol]["buy"][-20:]
         history[symbol]["sell"] = history[symbol]["sell"][-20:]
 
-        print(n_buy, n_sell)
-        print(len(history[symbol]["buy"]), len(history[symbol]["sell"]))
-
 def trade(exchange):
 
     global history, orders
 
     # get means of BABZ, BABA buy and sell
+    BABA_buy = np.mean(history["BABA"]["buy"])
+    BABA_sell = np.mean(history["BABA"]["sell"])
+    BABZ_buy = np.mean(history["BABZ"]["buy"])
+    BABZ_sell = np.mean(history["BABZ"]["sell"])
 
-
+    # verify differences
+    print("BABA buy: ", BABZ_sell - BABA_buy)
+    print("BABA sell: ", BABA_sell - BABZ_buy)
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
