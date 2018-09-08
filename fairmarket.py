@@ -25,7 +25,7 @@ test_mode = True
 # 0 is prod-like
 # 1 is slower
 # 2 is empty
-test_exchange_index=1
+test_exchange_index=0
 prod_exchange_hostname="production"
 
 port=25000 + (test_exchange_index if test_mode else 0)
@@ -72,7 +72,7 @@ orders = deque()
 
 
 def fmv_midpoint(symbol):
-    return stocks[symbol]["min"] + (stocks[symbol]["max"] - stocks[symbol]["min"]) * 0.5
+    return int(stocks[symbol]["min"] + (stocks[symbol]["max"] - stocks[symbol]["min"]) * 0.6)
 
 
 def fme_trade(exchange, update):
@@ -107,14 +107,14 @@ def fme_trade(exchange, update):
 
     # buy or sell as necessary
     if buy_this_round > 0 and random.random() < 1.0:
-        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "BUY", "price": fmv_midpoint(symbol) - 2, "size": 1})
+        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "BUY", "price": int(fmv_midpoint(symbol) - 2), "size": 1})
         orders.append(stocks_id)
         stocks[symbol]["buy_amt"] += buy_this_round
         stocks_id += 1
         print('actually bought')
         print(str(fmv_midpoint(symbol) - 2))
     if sell_this_round > 0 and random.random() < 0.5:
-        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "SELL", "price": fmv_midpoint(symbol) + 2, "size": 1})
+        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "SELL", "price": int(fmv_midpoint(symbol) + 2), "size": 1})
         orders.append(stocks_id)
         stocks[symbol]["sell_amt"] += sell_this_round
         stocks_id += 1
