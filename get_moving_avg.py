@@ -10,6 +10,7 @@ from __future__ import print_function
 import sys
 import socket
 import json
+import time
 
 # ~~~~~============== CONFIGURATION  ==============~~~~~
 # replace REPLACEME with your team name!
@@ -67,29 +68,17 @@ def main():
 
     # Hello
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
-    exchange_reply = read_from_exchange(exchange)
-    print("The exchange replied:", exchange_reply, file=sys.stderr)
+    time.sleep(1)  # wait a bit for the ack hello before running
+    _ = read_from_exchange(exchange)  # clear the hello acknowledgement from buffer
 
-    count = 0
+    bond_strategy(exchange)
+
     while True:
-        count = count + 1
-        if count == 1:
-            bond_strategy(exchange)
+
+
         exchange_reply = read_from_exchange(exchange)
-        print("The exchange replied:", exchange_reply, file=sys.stderr)
+        # print("The exchange replied:", exchange_reply, file=sys.stderr)
 
-    """
-    write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
-    hello_from_exchange = read_from_exchange(exchange)
-    # A common mistake people make is to call write_to_exchange() > 1
-    # time for every read_from_exchange() response.
-    # Since many write messages generate marketdata, this will cause an
-    # exponential explosion in pending messages. Please, don't do that!
-    print("The exchange replied:", hello_from_exchange, file=sys.stderr)
-
-    write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
-    print("The exchange replied:", hello_from_exchange, file=sys.stderr)
-    """
 
 if __name__ == "__main__":
     main()
