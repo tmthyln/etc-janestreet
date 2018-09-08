@@ -25,7 +25,7 @@ test_mode = True
 # 0 is prod-like
 # 1 is slower
 # 2 is empty
-test_exchange_index=0
+test_exchange_index=1
 prod_exchange_hostname="production"
 
 port=25000 + (test_exchange_index if test_mode else 0)
@@ -91,7 +91,6 @@ def fme_trade(exchange, update):
     moving = True
 
     if moving:
-        start_time = time.time()
         # update data
         stocks[symbol]["values"].append(update["price"])
 
@@ -102,8 +101,6 @@ def fme_trade(exchange, update):
         # update max/min
         stocks[symbol]["max"] = max(stocks[symbol]["values"])
         stocks[symbol]["min"] = min(stocks[symbol]["values"])
-
-        print("Time taken" + str(time.time() - start_time))
     else:
         stocks[symbol]["max"] = max(stocks[symbol]["max"], update["price"])
         stocks[symbol]["min"] = min(stocks[symbol]["min"], update["price"])
