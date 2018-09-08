@@ -10,6 +10,7 @@ from __future__ import print_function
 import sys
 import socket
 import json
+import random
 
 # ~~~~~============== CONFIGURATION  ==============~~~~~
 # replace REPLACEME with your team name!
@@ -86,11 +87,11 @@ def fme_trade(exchange, update):
 
     print(fmv_midpoint(symbol))
 
-    if buy_this_round > 0:
+    if buy_this_round > 0 and random.random() < 0.25:
         write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": symbol, "dir": "BUY", "price": fmv_midpoint(symbol) - 2, "size": 1})
         stocks[symbol]["buy_amt"] += buy_this_round
         print('actually bought')
-    if sell_this_round > 0:
+    if sell_this_round > 0 and random.random() < 0.25:
         write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": symbol, "dir": "SELL", "price": fmv_midpoint(symbol) + 2, "size": 1})
         stocks[symbol]["sell_amt"] += sell_this_round
         print('actually sold')
