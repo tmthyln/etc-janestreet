@@ -16,7 +16,7 @@ import json
 team_name="SEEKINGALPHA"
 # This variable dictates whether or not the bot is connecting to the prod
 # or test exchange. Be careful with this switch!
-test_mode = False
+test_mode = True
 
 # This setting changes which test exchange is connected to.
 # 0 is prod-like
@@ -70,7 +70,7 @@ def trade(update):
                 "type": "add", "order_id": 10, "symbol": symbol,
                 "dir": "BUY", "price": update["buy"][0][0] + 1, "size": 1
             })
-            
+
             write_to_exchange(exchange, {
                 "type": "add", "order_id": 12, "symbol": symbol,
                 "dir": "SELL", "price": update["sell"][0][0] - 1, "size": 1
