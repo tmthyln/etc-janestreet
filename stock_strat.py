@@ -69,7 +69,7 @@ main_book = {
 }
 
 def update_book(info, book):
-    if book["type"] == "book":
+    if book[u"type"] == "book":
 
         symbol = book["symbol"]
 
