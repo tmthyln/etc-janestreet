@@ -1,6 +1,6 @@
 """
 
-BABZ - BABA arbirage
+BABZ - BABA arbitrage
 
 """
 
@@ -74,6 +74,9 @@ main_book = {
 }
 
 def update_book(info, book):
+
+	changed = False
+
 	if info["type"] == "book":
 
 		symbol = info["symbol"]
@@ -87,6 +90,7 @@ def update_book(info, book):
 					book[symbol]["buy"]["price"] = order[0]
 					book[symbol]["buy"]["quantity"] = order[1]
 					max_buy = order[0]
+					if not changed: changed = True
 		if "sell" in info:
 			min_sell = sys.maxint
 			for order in info["sell"]:
@@ -94,6 +98,55 @@ def update_book(info, book):
 					book[symbol]["sell"]["price"] = order[0]
 					book[symbol]["sell"]["quantity"] = order[1]
 					min_sell = order[0]
+					if not changed: changed = True
+
+	return changed
+
+def baba_arbitrage(exchange, book):
+
+	option1quant = min(book["BABZ"]["sell"]["quantity"], book["BABA"]["buy"]["quantity"])
+	option2quant = min(book["BABA"]["sell"]["quantity"], book["BABZ"]["buy"]["quantity"])
+
+	option1 = (book["BABZ"]["sell"]["price"] - book["BABA"]["buy"]["price"]) * option1quant - 10
+	option2 = (book["BABA"]["sell"]["price"] - book["BABZ"]["buy"]["price"]) * option2quant - 10
+
+	if max(option1, option2) > 0:
+
+		if option1 < option2:
+
+			write_to_exchange(exchange, {
+				"type": "add", "order_id": 10, "symbol": "BABZ", "dir": "BUY",
+				"price": book["BABZ"]["sell"]["price"], "size": option1quant
+			})
+
+			# convert
+			write_to_exchange(exchange, {
+				"type": "convert", "order_id": 12, "symbol": "BABZ",
+				"dir": "SELL", "size": option1quant
+			})
+
+			write_to_exchange(exchange, {
+				"type": "add", "order_id": 14, "symbol": "BABA", "dir": "SELL",
+				"price": book["BABA"]["buy"]["price"], "size": option1quant
+			})
+
+		else:
+
+			write_to_exchange(exchange, {
+				"type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY",
+				"price": book["BABA"]["sell"]["price"], "size": option2quant
+			})
+
+			# convert
+			write_to_exchange(exchange, {
+				"type": "convert", "order_id": 12, "symbol": "BABZ",
+				"dir": "BUY", "size": option1quant
+			})
+
+			write_to_exchange(exchange, {
+				"type": "add", "order_id": 14, "symbol": "BABZ", "dir": "SELL",
+				"price": book["BABZ"]["buy"]["price"], "size": option2quant
+			})
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
@@ -110,14 +163,15 @@ def main():
 
         # call bond strat once
         count = count + 1
-        if count == 1:
-            bond_strategy(exchange)
+        #if count == 1:
+            #bond_strategy(exchange)
 
         exchange_reply = read_from_exchange(exchange)
         # print("The exchange replied:", exchange_reply, file=sys.stderr)
 
         # continuous stock strat
-        update_book(exchange_reply, main_book)
+        if update_book(exchange_reply, main_book):
+        	baba_arbitrage(exchange, main_book)
         print(main_book)
 
     """
