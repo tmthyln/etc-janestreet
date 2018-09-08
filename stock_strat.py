@@ -55,8 +55,8 @@ def bond_strategy(exchange):
     print("BOND STRATEGY ------------------")
  
     size = 100
-    write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size })
-    write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": size })
+    write_to_exchange(exchange, { "type": "add", "order_id": 20, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size })
+    write_to_exchange(exchange, { "type": "add", "order_id": 22, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": size })
 
 import sys
 
@@ -72,6 +72,7 @@ def update_book(info, book):
     if info["type"] == "book":
 
         symbol = info["symbol"]
+        if not (symbol in ["GOOG", "MSFT", "AAPL"]): return
 
         # sell - get lowest selling price on our book
         for order in info["sell"]:
