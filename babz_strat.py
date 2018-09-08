@@ -208,9 +208,13 @@ def main():
         if count == 1:
         	update_book(exchange_reply, main_book)
         	write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY", "price": main_book["BABA"]["sell"]["price"] , "size": 10 })
-        	write_to_exchange(exchange, { "type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": 10 })
+        	write_to_exchange(exchange, { "type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": 3 })
 			#write_to_exchange(exchange, { "type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": 10 })
             #bond_strategy(exchange)
+
+        exchange_reply = read_from_exchange(exchange)
+        if exchange_reply["type"] == "ack" or exchange_reply["type"] == "reject":
+        	print("The exchange replied:", exchange_reply, file=sys.stderr)
 
 
         # continuous stock strat
