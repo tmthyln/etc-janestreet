@@ -77,6 +77,7 @@ def track(exchange, update):
         history[symbol]["buy"] = history[symbol]["buy"][:-20]
         history[symbol]["sell"] = history[symbol]["sell"][:-20]
 
+        print(n_buy, n_sell)
         print(len(history[symbol]))
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
