@@ -111,7 +111,10 @@ orders = deque()
 
 
 def fmv_midpoint(symbol):
-    scale_factor = 0.5 + 0.5 * (stocks[symbol]["net_mov"] / stocks[symbol]['tot_mov'])
+    if stocks[symbol]['tot_mov'] != 0:
+        scale_factor = 0.5 + 0.5 * (stocks[symbol]["net_mov"] / stocks[symbol]['tot_mov'])
+    else:
+        scale_factor = 0.55
     return int(stocks[symbol]["min"] + (stocks[symbol]["max"] - stocks[symbol]["min"]) * scale_factor)
 
 
