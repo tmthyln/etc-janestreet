@@ -59,7 +59,7 @@ moving_avgs = {
 
 def update_data(update):
 
-    fudge = 5
+    fudge = 0
 
     # preform trades
     if update["type"] == "book" and update["symbol"] in ["GOOG", "MSFT", "AAPL"]:
