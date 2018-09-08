@@ -72,7 +72,7 @@ orders = deque()
 
 
 def fmv_midpoint(symbol):
-    return stocks[symbol]["min"] + (stocks[symbol]["max"] - stocks[symbol]["min"]) * 0.6
+    return stocks[symbol]["min"] + (stocks[symbol]["max"] - stocks[symbol]["min"]) * 0.5
 
 
 def fme_trade(exchange, update):
