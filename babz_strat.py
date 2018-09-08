@@ -74,6 +74,9 @@ main_book = {
 }
 
 def update_book(info, book):
+
+	changed = False
+
 	if info["type"] == "book":
 
 		symbol = info["symbol"]
@@ -87,6 +90,7 @@ def update_book(info, book):
 					book[symbol]["buy"]["price"] = order[0]
 					book[symbol]["buy"]["quantity"] = order[1]
 					max_buy = order[0]
+					if not changed: changed = True
 		if "sell" in info:
 			min_sell = sys.maxint
 			for order in info["sell"]:
@@ -94,6 +98,9 @@ def update_book(info, book):
 					book[symbol]["sell"]["price"] = order[0]
 					book[symbol]["sell"]["quantity"] = order[1]
 					min_sell = order[0]
+					if not changed: changed = True
+
+	return changed
 
 def baba_arbitrage(exchange, book):
 
@@ -163,8 +170,8 @@ def main():
         # print("The exchange replied:", exchange_reply, file=sys.stderr)
 
         # continuous stock strat
-        update_book(exchange_reply, main_book)
-        baba_arbitrage(exchange, main_book)
+        if update_book(exchange_reply, main_book):
+        	baba_arbitrage(exchange, main_book)
         print(main_book)
 
     """
