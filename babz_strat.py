@@ -198,17 +198,20 @@ def main():
     count = 0
     while True:
 
+    	# get exchange_reply
+    	exchange_reply = read_from_exchange(exchange)
+        if exchange_reply["type"] == "ack" or exchange_reply["type"] == "reject":
+        	print("The exchange replied:", exchange_reply, file=sys.stderr)
+
         # call bond strat once
         count = count + 1
         if count == 1:
-        	write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY", "price": 5000 , "size": 10 })
+        	update_book(exchange_reply, main_book)
+        	write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY", "price": main_book["BABA"]["sell"]["price"] , "size": 10 })
         	write_to_exchange(exchange, { "type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": 10 })
 			#write_to_exchange(exchange, { "type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": 10 })
             #bond_strategy(exchange)
 
-        exchange_reply = read_from_exchange(exchange)
-        if exchange_reply["type"] == "ack" or exchange_reply["type"] == "reject":
-        	print("The exchange replied:", exchange_reply, file=sys.stderr)
 
         # continuous stock strat
         """
