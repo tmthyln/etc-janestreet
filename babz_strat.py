@@ -1,6 +1,6 @@
 """
 
-BABZ - BABA arbirage
+BABZ - BABA arbitrage
 
 """
 
@@ -94,6 +94,27 @@ def update_book(info, book):
 					book[symbol]["sell"]["price"] = order[0]
 					book[symbol]["sell"]["quantity"] = order[1]
 					min_sell = order[0]
+
+def baba_arbitrage(exchange, book):
+
+	option1quant = min(book["BABZ"]["sell"]["quantity"], book["BABA"]["buy"]["quantity"])
+	option1quant = min(book["BABA"]["sell"]["quantity"], book["BABZ"]["buy"]["quantity"])
+
+	option1 = (book["BABZ"]["sell"]["price"] - book["BABA"]["buy"]["price"]) * option1quant - 10
+	option2 = (book["BABA"]["sell"]["price"] - book["BABZ"]["buy"]["price"]) * option2quant - 10
+
+	if max(option1, option2) > 0:
+
+		if option1 > option2:
+
+			write_to_exchange(exchange, {
+				"type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY",
+				"price": book["BABZ"]["sell"]["price"], "size": option1quant
+			})
+			# convert
+			write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY", "price": 999, "size": size })
+
+			write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BABZ", "dir": "SELL", "price": 999, "size": size })
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
