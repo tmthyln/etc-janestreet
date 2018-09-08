@@ -68,8 +68,11 @@ def main():
     exchange_reply = read_from_exchange(exchange)
     print("The exchange replied:", exchange_reply, file=sys.stderr)
 
+    count = 0
     while True:
-        bond_strategy(exchange)
+        count = count + 1
+        if count == 1:
+            bond_strategy(exchange)
         exchange_reply = read_from_exchange(exchange)
         print("The exchange replied:", exchange_reply, file=sys.stderr)
 
