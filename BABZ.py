@@ -84,7 +84,7 @@ def track(exchange, update):
         
         order_id = update["order_id"]
         order_type = order_hist[order_id]["type"]
-        convert.push([order_type]) # depending on order type, will buy or sell BABZ
+        convert.append([order_type]) # depending on order type, will buy or sell BABZ
         need_to_process.remove(order_id)
         del order[order_id]
 
