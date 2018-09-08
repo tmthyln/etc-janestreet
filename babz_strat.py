@@ -201,7 +201,7 @@ def main():
         # call bond strat once
         count = count + 1
         if count == 1:
-        	write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY", "price": 10000 , "size": 10 })
+        	write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY", "price": 9999 , "size": 10 })
         	write_to_exchange(exchange, { "type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": 10 })
 			#write_to_exchange(exchange, { "type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": 10 })
             #bond_strategy(exchange)
