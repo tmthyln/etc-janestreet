@@ -91,6 +91,7 @@ def main():
     while True:
 
         exchange_reply = read_from_exchange(exchange)
+        trade(exchange_reply)
         #print("The exchange replied:", exchange_reply, file=sys.stderr)
 
 
