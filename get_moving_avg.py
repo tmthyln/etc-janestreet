@@ -66,12 +66,12 @@ def update_data(exchange, update):
         symbol = update["symbol"]
         print(update["sell"][0])
         print(moving_avgs[symbol])
-        if update["sell"][0][0] < moving_avgs[symbol]["value"]:
+        if len(update["sell"]) > 0 and update["sell"][0][0] < moving_avgs[symbol]["value"]:
             write_to_exchange(exchange, {
                 "type": "add", "order_id": 10, "symbol": symbol,
                 "dir": "BUY", "price": update["sell"][0][0], "size": update["sell"][0][1]
             })
-        elif update["buy"][0][0] > moving_avgs[symbol]["value"]:
+        elif len(update["buy"]) > 0 and update["buy"][0][0] > moving_avgs[symbol]["value"]:
              write_to_exchange(exchange, {
                 "type": "add", "order_id": 10, "symbol": symbol,
                 "dir": "SELL", "price": update["buy"][0][0], "size": update["buy"][0][1]
