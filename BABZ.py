@@ -96,10 +96,10 @@ def trade(exchange):
     global history, orders
 
     # get means of BABZ, BABA buy and sell
-    BABA_buy = np.mean(history["BABA"]["buy"])
-    BABA_sell = np.mean(history["BABA"]["sell"])
-    BABZ_buy = np.mean(history["BABZ"]["buy"])
-    BABZ_sell = np.mean(history["BABZ"]["sell"])
+    BABA_buy = sum(history["BABA"]["buy"]) / len(history["BABA"]["buy"])
+    BABA_sell = sum(history["BABA"]["sell"]) / sum(history["BABA"]["sell"])
+    BABZ_buy = sum(history["BABZ"]["buy"]) / sum(history["BABZ"]["buy"])
+    BABZ_sell = sum(history["BABZ"]["sell"]) / sum(history["BABZ"]["sell"])
 
     # verify differences
     print("BABA buy: ", BABZ_sell - BABA_buy)
