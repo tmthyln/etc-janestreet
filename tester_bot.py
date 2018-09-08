@@ -10,6 +10,7 @@ from __future__ import print_function
 import sys
 import socket
 import json
+import time
 
 # ~~~~~============== CONFIGURATION  ==============~~~~~
 # replace REPLACEME with your team name!
@@ -48,15 +49,43 @@ def write_and_read(exchange, command):
     exchange_reply = read_from_exchange(exchange)
     print("The exchange replied:", exchange_reply, file=sys.stderr)
 
-# ~~~~~============== TRADING LOGIC ==============~~~~~
+
+# ~~~~~============== BOND TRADING LOGIC ==============~~~~~
+bond_buy_size = 0
+bond_sell_size = 0
+
+bond_id = 24000
+
 
 def bond_strategy(exchange):
     # always buy bond for < 1000 and sell bond for > 1000
     print("BOND STRATEGY ------------------")
- 
-    size = 100
-    write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size })
-    write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": size })
+    global bond_buy_size, bond_sell_size, bond_id
+
+    buy_this_round = 100 - bond_buy_size
+    sell_this_round = 100 - bond_buy_size
+
+    if buy_this_round > 0:
+        write_to_exchange(exchange, { "type": "add", "order_id": bond_id, "symbol": "BOND", "dir": "BUY", "price": 999, "size": buy_this_round })
+    if sell_this_round > 0:
+        write_to_exchange(exchange, { "type": "add", "order_id": bond_id + 1, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": sell_this_round})
+
+    bond_id += 2
+
+
+def bond_update(update):
+    global bond_buy_size, bond_sell_size
+
+    if update['type'] != 'fill':
+        return
+    if update['symbol'] != 'BOND':
+        return
+
+    if update['dir'] == 'BUY':
+        bond_buy_size -= update['size']
+    else:
+        bond_sell_size -= update['size']
+
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
@@ -65,13 +94,20 @@ def main():
 
     # Hello
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
+    time.sleep(1) # wait a bit for the ack hello before running
     exchange_reply = read_from_exchange(exchange)
     print("The exchange replied:", exchange_reply, file=sys.stderr)
 
     while True:
+        # strategies to run
         bond_strategy(exchange)
+
+        # reply from server
         exchange_reply = read_from_exchange(exchange)
         print("The exchange replied:", exchange_reply, file=sys.stderr)
+
+        # update strategies
+        bond_update(exchange_reply)
 
     """
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
