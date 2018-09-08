@@ -55,12 +55,25 @@ history = {
     "BABZ": { "buy": [], "sell": [] },
     "BABA": { "buy": [], "sell": [] }
 }
+# our orders
+order_hist = {}
+curr_order = 0
+def new_order(order_type, ticker):
+    global curr_order, order_hist
+    curr_order = curr_order + 1
+    order_hist[curr_order] = { "type": order_type, "ticker": ticker }
+    return curr_order
+
 # our positions
+# just counts how many shares we are in
 positions = {
-    
+    "BABZ": {},
+    "BABA": {}
 }
 
 def track(exchange, update):
+
+    global history, orders
 
     # real time market requests
     if update["type"] == "book" and update["symbol"] in ["BABZ", "BABA"]:
@@ -79,6 +92,14 @@ def track(exchange, update):
 
         print(n_buy, n_sell)
         print(len(history[symbol]["buy"]), len(history[symbol]["sell"]))
+
+def trade(exchange):
+
+    global history, orders
+
+    # get means of BABZ, BABA buy and sell
+
+
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
