@@ -65,17 +65,17 @@ def trade(exchange, update):
         symbol = update["symbol"]
         print("TRADING: ", symbol)
 
-        if len(update["buy"]) > 0 and len(update["sell"]) > 0 and (update["sell"][0][0] - update["buy"][0][0]) > 2:
+        if len(update["buy"]) > 0 and len(update["sell"]) > 0 and (update["sell"][0][0] - update["buy"][0][0]) > 1:
             print("MADE TRADE")
 
             write_to_exchange(exchange, {
                 "type": "add", "order_id": 10, "symbol": symbol,
-                "dir": "BUY", "price": update["buy"][0][0] + 1, "size": 1
+                "dir": "BUY", "price": update["buy"][0][0], "size": 1
             })
 
             write_to_exchange(exchange, {
                 "type": "add", "order_id": 12, "symbol": symbol,
-                "dir": "SELL", "price": update["buy"][0][0] + 2, "size": 1
+                "dir": "SELL", "price": update["buy"][0][0] + 1, "size": 1
             })
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
