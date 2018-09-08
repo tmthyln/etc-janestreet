@@ -52,9 +52,9 @@ def write_and_read(exchange, command):
 
 # round resets every 5 mins, so don't need to reset moving avg
 moving_avgs = {
-    "GOOG": { "value": 0, "count": 0 },
-    "MSFT": { "value": 0, "count": 0 },
-    "AAPL": { "value": 0, "count": 0 }
+    "GOOG": { "value": 0, "count": 0, "buy_amt": 0, "sell_amt": 0 },
+    "MSFT": { "value": 0, "count": 0, "buy_amt": 0, "sell_amt": 0 },
+    "AAPL": { "value": 0, "count": 0, "buy_amt": 0, "sell_amt": 0 }
 }
 
 def trade(exchange, update):
@@ -62,6 +62,10 @@ def trade(exchange, update):
     # update data
     if update["type"] == "trade" and update["symbol"] in ["GOOG", "MSFT", "AAPL"]:
         symbol = update["symbol"]
+
+        buy_this_round = 100 - moving_avgs[symbol]["buy_amt"]
+        sell_this_round = 100 - moving_avgs[symbol]["sell_amt"]
+
         # update moving avg
         old_avg = moving_avgs[symbol]["value"]
         old_cnt = moving_avgs[symbol]["count"]
@@ -69,8 +73,25 @@ def trade(exchange, update):
         moving_avgs[symbol]["count"] = moving_avgs[symbol]["count"] + 1
 
         # buy at 1 below fair market, sell at 1 above fair market - same as bond strategy
-        write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": symbol, "dir": "BUY", "price": moving_avgs[symbol]["value"] - 1, "size": 1 })
-        write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": symbol, "dir": "SELL", "price": moving_avgs[symbol]["value"] + 1, "size": 1 })
+
+        if buy_this_round > 0:
+            write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": symbol, "dir": "BUY", "price": moving_avgs[symbol]["value"] - 1, "size": 1 })
+            moving_avgs[symbol]["buy_amt"] += buy_this_round
+        if sell_this_round > 0:
+            write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": symbol, "dir": "SELL", "price": moving_avgs[symbol]["value"] + 1, "size": 1 })
+            moving_avgs[symbol]["sell_amt"] += sell_this_round
+
+def update(update):
+    if update['type'] != 'fill':
+        return
+
+    if update['symbol'] not in ["GOOG", "MSFT", "AAPL"]:
+        return
+
+    if update['dir'] == 'buy':
+        moving_avgs[update['symbol']]['buy_amt'] -= update['size']
+    else:
+        moving_avgs[update['symbol']]['sell_amt'] -= update['size']
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
@@ -86,6 +107,7 @@ def main():
 
         exchange_reply = read_from_exchange(exchange)
         trade(exchange, exchange_reply)
+        update(exchange_reply)
 
 if __name__ == "__main__":
     main()
