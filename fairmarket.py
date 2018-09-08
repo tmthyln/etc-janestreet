@@ -87,18 +87,22 @@ def fme_trade(exchange, update):
     buy_this_round = (100 - stocks[symbol]["buy_amt"]) // 10
     sell_this_round = (100 - stocks[symbol]["sell_amt"]) // 10
 
-    # update data
-    stocks[symbol]["values"].append(update["price"])
+    moving = False
 
-    # maintain moving window
-    if len(stocks[symbol]["values"]) > 1000:
-        stocks[symbol]["values"].popleft()
+    if moving:
+        # update data
+        stocks[symbol]["values"].append(update["price"])
 
-    # update max/min
-    stocks[symbol]["max"] = max(stocks[symbol]["values"])
-    stocks[symbol]["min"] = min(stocks[symbol]["values"])
+        # maintain moving window
+        if len(stocks[symbol]["values"]) > 1000:
+            stocks[symbol]["values"].popleft()
 
-    print(fmv_midpoint(symbol))
+        # update max/min
+        stocks[symbol]["max"] = max(stocks[symbol]["values"])
+        stocks[symbol]["min"] = min(stocks[symbol]["values"])
+    else:
+        stocks[symbol]["max"] = max(stocks[symbol]["max"], update["price"])
+        stocks[symbol]["min"] = min(stocks[symbol]["min"], update["price"])
 
     # buy or sell as necessary
     if buy_this_round > 0 and random.random() < 1.0:
