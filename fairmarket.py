@@ -100,9 +100,9 @@ def bond_update(update):
 
 # round resets every 5 mins, so don't need to reset moving avg
 stocks = {
-    "GOOG": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0, "tot_mov": 0, "net_mov": 0},
-    "MSFT": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0, "tot_mov": 0, "net_mov": 0},
-    "AAPL": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0, "tot_mov": 0, "net_mov": 0}
+    "GOOG": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0, "tot_mov": 0, "net_mov": 0, "fmv": deque()},
+    "MSFT": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0, "tot_mov": 0, "net_mov": 0, "fmv": deque()},
+    "AAPL": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0, "tot_mov": 0, "net_mov": 0, "fmv": deque()}
 }
 
 
@@ -131,7 +131,7 @@ def fme_trade(exchange, update):
     buy_this_round = int(max(0, (90 - stocks[symbol]["buy_amt"]) // 10 + 1))
     sell_this_round = int(max(0, (90 - stocks[symbol]["sell_amt"]) // 10 + 1))
 
-    moving = False
+    moving = True
 
     # max/min fmv update
     if moving:
@@ -158,17 +158,25 @@ def fme_trade(exchange, update):
         stocks[symbol]["max"] = max(stocks[symbol]["max"], update["price"])
         stocks[symbol]["min"] = min(stocks[symbol]["min"], update["price"])
 
+    # update predicted fmv
+    stocks[symbol]["fmv"].append(fmv_midpoint(symbol))
+
+    if len(stocks[symbol]["fmv"]) > 50:
+        stocks[symbol]["fmv"].popleft()
+
+    curr_fmv = sum(stocks[symbol]["fmv"]) / len(stocks[symbol]["fmv"])
+
     # buy or sell as necessary
     margin = 6
 
     if buy_this_round > 0 and random.random() < 1.0:
-        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "BUY", "price": int(fmv_midpoint(symbol) - margin), "size": 1})
+        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "BUY", "price": curr_fmv - margin, "size": 1})
         orders.append(stocks_id)
         stocks[symbol]["buy_amt"] += buy_this_round
         stocks_id += 1
         print('actually bought')
     if sell_this_round > 0 and random.random() < 0.25:
-        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "SELL", "price": int(fmv_midpoint(symbol) + margin), "size": 1})
+        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "SELL", "price": curr_fmv + margin, "size": 1})
         orders.append(stocks_id)
         stocks[symbol]["sell_amt"] += sell_this_round
         stocks_id += 1
