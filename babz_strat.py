@@ -102,89 +102,6 @@ def update_book(info, book):
 
 	return changed
 
-"""
-def baba_arbitrage(exchange, book):
-
-
-	option1quant = min(book["BABA"]["sell"]["quantity"], book["BABZ"]["buy"]["quantity"])
-	if (book["BABZ"]["sell"]["price"] - book["BABA"]["buy"]["price"]) * option1quant - 10 > 0:
-		# execute BABZ to BABA arbitrage
-		# 1. buy BABA for cheap
-		# 2. convert BABA to BABZ
-		# 3. sell BABZ for more than BABA cost us to buy
-		write_to_exchange(exchange, {
-			"type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY",
-			"price": book["BABA"]["sell"]["price"], "size": option1quant
-		})
-		write_to_exchange(exchange, {
-			"type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": option1quant
-		})
-		write_to_exchange(exchange, {
-			"type": "add", "order_id": 10, "symbol": "BABA", "dir": "SELL",
-			"price": book["BABZ"]["sell"]["price"], "size": option1quant
-		})
-
-	
-	option2quant = min(book["BABA"]["sell"]["quantity"], book["BABZ"]["buy"]["quantity"])
-
-	option1 = (book["BABZ"]["sell"]["price"] - book["BABA"]["buy"]["price"]) * option1quant - 10
-	option2 = (book["BABA"]["sell"]["price"] - book["BABZ"]["buy"]["price"]) * option2quant - 10
-
-	if max(option1, option2) > 0:
-
-		if option1 < option2:
-
-			write_to_exchange(exchange, {
-				"type": "add", "order_id": 10, "symbol": "BABZ", "dir": "BUY",
-				"price": book["BABZ"]["sell"]["price"], "size": option1quant
-			})
-
-			# convert
-			write_to_exchange(exchange, {
-				"type": "convert", "order_id": 12, "symbol": "BABZ",
-				"dir": "SELL", "size": option1quant
-			})
-
-			write_to_exchange(exchange, {
-				"type": "add", "order_id": 14, "symbol": "BABA", "dir": "SELL",
-				"price": book["BABA"]["buy"]["price"], "size": option1quant
-			})
-
-		else:
-
-			write_to_exchange(exchange, {
-				"type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY",
-				"price": book["BABA"]["sell"]["price"], "size": option2quant
-			})
-
-			# convert
-			write_to_exchange(exchange, {
-				"type": "convert", "order_id": 12, "symbol": "BABZ",
-				"dir": "BUY", "size": option1quant
-			})
-
-			write_to_exchange(exchange, {
-				"type": "add", "order_id": 14, "symbol": "BABZ", "dir": "SELL",
-				"price": book["BABZ"]["buy"]["price"], "size": option2quant
-			})
-
-Does something
-
-option1quant = min(book["BABZ"]["sell"]["quantity"], book["BABA"]["buy"]["quantity"])
-	if (book["BABZ"]["sell"]["price"] - book["BABA"]["buy"]["price"]) * option1quant - 10 > 0:
-		# execute BABZ to BABA arbitrage
-		# 1. buy BABZ for cheap
-		# 2. convert BABZ to BABA
-		# 3. sell BABA for more than BABZ cost us to buy
-		write_to_exchange(exchange, {
-			"type": "add", "order_id": 10, "symbol": "BABZ", "dir": "BUY",
-			"price": book["BABZ"]["sell"]["price"], "size": option1quant
-		})
-		write_to_exchange(exchange, {
-			"type": "convert", "order_id": 12, "symbol": "BABA", "dir": "BUY", "size": option1quant
-		})
-"""
-
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
 def main():
@@ -195,46 +112,12 @@ def main():
     exchange_reply = read_from_exchange(exchange)
     print("The exchange replied:", exchange_reply, file=sys.stderr)
 
-    count = 0
     while True:
 
-    	# get exchange_reply
     	exchange_reply = read_from_exchange(exchange)
-        if exchange_reply["type"] == "ack" or exchange_reply["type"] == "reject":
-        	print("The exchange replied:", exchange_reply, file=sys.stderr)
+    	update_book(exchange_reply, main_book)
+    	print(main_book, end='')
 
-        # call bond strat once
-        count = count + 1
-        if count == 1:
-        	update_book(exchange_reply, main_book)
-        	write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY", "price": main_book["BABA"]["sell"]["price"] , "size": 10 })
-        	write_to_exchange(exchange, { "type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": 3 })
-			#write_to_exchange(exchange, { "type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": 10 })
-            #bond_strategy(exchange)
-
-        exchange_reply = read_from_exchange(exchange)
-        if exchange_reply["type"] == "ack" or exchange_reply["type"] == "reject":
-        	print("The exchange replied:", exchange_reply, file=sys.stderr)
-
-
-        # continuous stock strat
-        """
-        if update_book(exchange_reply, main_book):
-        	baba_arbitrage(exchange, main_book)
-		"""
-        # print(main_book)
-
-    """
-    write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
-    hello_from_exchange = read_from_exchange(exchange)
-    # A common mistake people make is to call write_to_exchange() > 1
-    # time for every read_from_exchange() response.
-    # Since many write messages generate marketdata, this will cause an
-    # exponential explosion in pending messages. Please, don't do that!
-    print("The exchange replied:", hello_from_exchange, file=sys.stderr)
-
-    write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
-    print("The exchange replied:", hello_from_exchange, file=sys.stderr)
     """
 
 if __name__ == "__main__":

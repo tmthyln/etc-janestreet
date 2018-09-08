@@ -87,7 +87,7 @@ def bond_update(update):
     else:
         bond_sell_size -= update['size']
 
-    print(bond_buy_size, bond_sell_size)
+    # print(bond_buy_size, bond_sell_size)
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
