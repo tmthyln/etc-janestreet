@@ -62,11 +62,13 @@ order_hist = {}
 curr_order = 0
 
 def new_order(ord_type, ticker):
+    global curr_order, order_hist
     curr_order = curr_order + 1
     order_hist[curr_order] = { "type": ord_type, "ticker": ticker }
     return curr_order
 
 def trade(exchange, update):
+    global bought
 
     """
     Improvements:
