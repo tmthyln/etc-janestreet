@@ -202,7 +202,7 @@ def main():
         count = count + 1
         if count == 1:
         	write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY", "price": 10000 , "size": 10 })
-			write_to_exchange(exchange, { "type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": 10 })
+			#write_to_exchange(exchange, { "type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": 10 })
             #bond_strategy(exchange)
 
         exchange_reply = read_from_exchange(exchange)
