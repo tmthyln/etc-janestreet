@@ -87,14 +87,14 @@ def fme_trade(exchange, update):
     buy_this_round = (100 - stocks[symbol]["buy_amt"]) // 10
     sell_this_round = (100 - stocks[symbol]["sell_amt"]) // 10
 
-    moving = False
+    moving = True
 
     if moving:
         # update data
         stocks[symbol]["values"].append(update["price"])
 
         # maintain moving window
-        if len(stocks[symbol]["values"]) > 1000:
+        if len(stocks[symbol]["values"]) > 200:
             stocks[symbol]["values"].popleft()
 
         # update max/min
@@ -118,9 +118,9 @@ def fme_trade(exchange, update):
         stocks_id += 1
         print('actually sold')
 
-    # cancel orders more than 15 old
+    # cancel orders more than 20 old
     for order in orders:
-        if order + 15 < stocks_id:
+        if order + 20 < stocks_id:
             write_to_exchange(exchange, {'type': 'cancel', 'order_id': order})
         else:
             break
