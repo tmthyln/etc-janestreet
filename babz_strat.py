@@ -116,7 +116,7 @@ def main():
 
     	exchange_reply = read_from_exchange(exchange)
     	update_book(exchange_reply, main_book)
-    	print(main_book, end='')
+    	print(main_book, end='\r')
 
 if __name__ == "__main__":
     main()
