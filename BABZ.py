@@ -82,6 +82,8 @@ def track(exchange, update):
         order_id = update["order_id"]
         symbol = order_hist[order_id]["symbol"]
 
+        print("SUCCESSFUL ORDER: ", order_id, symbol)
+
         convert.append(order_id)
         need_to_process.remove(order_id)
 
@@ -106,7 +108,7 @@ def track(exchange, update):
 
 def trade(exchange):
 
-    global history, need_to_process, convert, order_hist
+    global history, positions, order_hist, need_to_process, convert
 
     if len(history["BABZ"]["buy"]) != 20 and len(history["BABA"]["buy"]) != 20 and len(history["BABZ"]["sell"]) != 20 and len(history["BABA"]["sell"]) != 20: return
 
@@ -126,18 +128,23 @@ def trade(exchange):
         # execute trades
 
         # initial trade to buy or sell BABA
-        buy_order_id = new_order("BUY", "BABA", BABA_buy + 1)
-        sell_order_id = new_order("SELL", "BABA", BABA_sell - 1)
+        buy_order_id, buy_price = new_order("BUY", "BABA", BABA_buy + 1)
+        sell_order_id, sell_price = new_order("SELL", "BABA", BABA_sell - 1)
         write_to_exchange(exchange, { 
             "type": "add", "order_id": buy_order_id, "symbol": "BABA",
-            "dir": "BUY", "price": BABA_buy + 1, "size": 1 # +1 to gauruntee that someone will sell
+            "dir": "BUY", "price": buy_price, "size": 1 # +1 to gauruntee that someone will sell
         })
         write_to_exchange(exchange, { 
             "type": "add", "order_id": sell_order_id, "symbol": "BABA",
-            "dir": "BUY", "price": BABA_sell - 1, "size": 1 # -1 to gauruntee that someone will buy
+            "dir": "BUY", "price": sell_price, "size": 1 # -1 to gauruntee that someone will buy
         })
         need_to_process.append(buy_order_id)
         need_to_process.append(sell_order_id)
+
+        print("DID SOMETHING WITH BABA", buy_order_id,, sell_order_id)
+        print("Current BABA order spread: ", buy_price, sell_price)
+        print("Current BABZ spread:", BABZ_buy, BABZ_sell)
+
 
     # while we can mess with BABZ and have BABA to convert to BABZ
     while positions["BABZ"] < 8 and len(convert) > 0:
