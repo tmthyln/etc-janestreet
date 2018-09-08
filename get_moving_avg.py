@@ -55,7 +55,6 @@ moving_avgs = {
     "GOOG": { "value": 0, "count": 0 },
     "MSFT": { "value": 0, "count": 0 },
     "AAPL": { "value": 0, "count": 0 }
-    ""
 }
 
 def update_data(update):
