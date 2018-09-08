@@ -62,7 +62,7 @@ def new_order(order_type, symbol, price):
     global curr_order, order_hist
     curr_order = curr_order + 1
     order_hist[curr_order] = { "type": order_type, "price": price, "symbol": symbol }
-    return order_id, price
+    return curr_order, price
 
 # list of positions to convert on
 need_to_process = [] # need to wait for these orders to be fulfilled
