@@ -105,18 +105,18 @@ def update_book(info, book):
 def baba_arbitrage(exchange, book):
 
 
-	option1quant = min(book["BABZ"]["sell"]["quantity"], book["BABA"]["buy"]["quantity"])
+	option1quant = min(book["BABA"]["sell"]["quantity"], book["BABZ"]["buy"]["quantity"])
 	if (book["BABZ"]["sell"]["price"] - book["BABA"]["buy"]["price"]) * option1quant - 10 > 0:
 		# execute BABZ to BABA arbitrage
-		# 1. buy BABZ for cheap
-		# 2. convert BABZ to BABA
-		# 3. sell BABA for more than BABZ cost us to buy
+		# 1. buy BABA for cheap
+		# 2. convert BABA to BABZ
+		# 3. sell BABZ for more than BABA cost us to buy
 		write_to_exchange(exchange, {
-			"type": "add", "order_id": 10, "symbol": "BABZ", "dir": "BUY",
-			"price": book["BABZ"]["sell"]["price"], "size": option1quant
+			"type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY",
+			"price": book["BABA"]["sell"]["price"], "size": option1quant
 		})
 		write_to_exchange(exchange, {
-			"type": "convert", "order_id": 12, "symbol": "BABA", "dir": "BUY", "size": option1quant
+			"type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": option1quant
 		})
 		"""
 		write_to_exchange(exchange, {
@@ -172,6 +172,24 @@ def baba_arbitrage(exchange, book):
 				"price": book["BABZ"]["buy"]["price"], "size": option2quant
 			})
 	"""
+
+"""
+Does something
+
+option1quant = min(book["BABZ"]["sell"]["quantity"], book["BABA"]["buy"]["quantity"])
+	if (book["BABZ"]["sell"]["price"] - book["BABA"]["buy"]["price"]) * option1quant - 10 > 0:
+		# execute BABZ to BABA arbitrage
+		# 1. buy BABZ for cheap
+		# 2. convert BABZ to BABA
+		# 3. sell BABA for more than BABZ cost us to buy
+		write_to_exchange(exchange, {
+			"type": "add", "order_id": 10, "symbol": "BABZ", "dir": "BUY",
+			"price": book["BABZ"]["sell"]["price"], "size": option1quant
+		})
+		write_to_exchange(exchange, {
+			"type": "convert", "order_id": 12, "symbol": "BABA", "dir": "BUY", "size": option1quant
+		})
+"""
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
