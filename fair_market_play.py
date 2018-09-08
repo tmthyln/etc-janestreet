@@ -98,7 +98,7 @@ def trade(exchange, update):
 
         # execute trade
         # buy at 1 below fair market, sell at 1 above fair market - same as bond strategy
-        if (bought[symbol] >= -10 && bought[symbol] <= 10):
+        if bought[symbol] >= -10 and bought[symbol] <= 10:
             write_to_exchange(exchange, {
                 "type": "add", "order_id": new_order("BUY", symbol), "symbol": symbol, "dir": "BUY", "price": fair_price - 1, "size": 1
             })
