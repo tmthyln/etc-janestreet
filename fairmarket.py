@@ -12,6 +12,7 @@ import socket
 import json
 import random
 from collections import deque
+import time
 
 # ~~~~~============== CONFIGURATION  ==============~~~~~
 # replace REPLACEME with your team name!
@@ -90,6 +91,7 @@ def fme_trade(exchange, update):
     moving = True
 
     if moving:
+        start_time = time.time()
         # update data
         stocks[symbol]["values"].append(update["price"])
 
@@ -100,6 +102,8 @@ def fme_trade(exchange, update):
         # update max/min
         stocks[symbol]["max"] = max(stocks[symbol]["values"])
         stocks[symbol]["min"] = min(stocks[symbol]["values"])
+
+        print("Time taken" + str(time.time() - start_time))
     else:
         stocks[symbol]["max"] = max(stocks[symbol]["max"], update["price"])
         stocks[symbol]["min"] = min(stocks[symbol]["min"], update["price"])
@@ -118,9 +122,9 @@ def fme_trade(exchange, update):
         stocks_id += 1
         print('actually sold')
 
-    # cancel orders more than 20 old
+    # cancel orders more than x orders old
     for order in orders:
-        if order + 20 < stocks_id:
+        if order + 10 < stocks_id:
             write_to_exchange(exchange, {'type': 'cancel', 'order_id': order})
         else:
             break
