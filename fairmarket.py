@@ -91,7 +91,7 @@ def fme_trade(exchange, update):
     stocks[symbol]["values"].append(update["price"])
 
     # maintain moving window
-    if len(stocks[symbol]["values"]) > 50:
+    if len(stocks[symbol]["values"]) > 1000:
         stocks[symbol]["values"].popleft()
 
     # update max/min
