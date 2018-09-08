@@ -1,3 +1,9 @@
+"""
+
+BABZ - BABA arbirage
+
+"""
+
 #!/usr/bin/python
 
 # ~~~~~==============   HOW TO RUN   ==============~~~~~
@@ -55,67 +61,30 @@ def bond_strategy(exchange):
     print("BOND STRATEGY ------------------")
  
     size = 100
-    write_to_exchange(exchange, { "type": "add", "order_id": 20, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size })
-    write_to_exchange(exchange, { "type": "add", "order_id": 22, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": size })
+    write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size })
+    write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": size })
 
 import sys
 
 # initialize buy value to very low - i.e. market buys for low
 # initialize sell value to very high - i.e. market sells for very high
 main_book = {
-    "GOOG": { "buy": { "price": -sys.maxint - 1, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } },
-    "MSFT": { "buy": { "price": -sys.maxint - 1, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } },
-    "AAPL": { "buy": { "price": -sys.maxint - 1, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } },
+    "BABZ": { "buy": { "price": sys.minint, "quantity": 0 } "sell": { "price": sys.maxint, "quantity": 0 } },
+    "BABA": { "buy": { "price": sys.minint, "quantity": 0 } "sell": { "price": sys.maxint, "quantity": 0 } }
 }
 
 def update_book(info, book):
-    if info["type"] == "book":
+	if book["type"] == "book":
 
-        symbol = info["symbol"]
-        if not (symbol in ["GOOG", "MSFT", "AAPL"]): return
+		symbol = book["symbol"]
+		if symbol not in ["BABA", "BABZ"]: return
 
-
-        # NEVER WORKS B/C USING OUTDATED INFO
-        # sell - get lowest selling price on our book
-        for order in info["sell"]:
-            if info["sell"][0] < book[symbol]["sell"]["price"]:
-                book[symbol]["sell"]["price"] = info["sell"][0]
-                book[symbol]["sell"]["quantity"] = info["sell"][1]
-
-        # buy - get highest buy price on our book
-        for order in info["buy"]:
-            if info["buy"][0] > book[symbol]["buy"]["price"]:
-                book[symbol]["buy"]["price"] = info["buy"][0]
-                book[symbol]["buy"]["quantity"] = info["buy"][1]
-
-def portfolio_balance(exchange, portfolio):
-    # preform trades
-
-    # GOOG
-    # if someone's sell order is less than someone elses buy order, then execute
-    if portfolio["GOOG"]["sell"] < portfolio["GOOG"]["buy"]:
-        quantity = min(portfolio["GOOG"]["sell"]["quantity"], portfolio["GOOG"]["sell"]["quantity"])
-
-        # buy for what market will sell
-        write_to_exchange(exchange, {
-            "type": "add",
-            "order_id": 10,
-            "symbol": "GOOG",
-            "dir": "BUY",
-            "price": portfolio["GOOG"]["sell"],
-            "size": quantity 
-        })
-
-        # sell for what market will buy
-        write_to_exchange(exchange, {
-            "type": "add",
-            "order_id": 12,
-            "symbol": "GOOG",
-            "dir": "SELL",
-            "price": portfolio["GOOG"]["buy"],
-            "size": quantity 
-        })
-
+		if "buy" in main_book[symbol]:
+			main_book[symbol]["buy"]["price"] = book["buy"][0]
+			main_book[symbol]["buy"]["quantity"] = book["buy"][1]
+		if "sell" in main_book[symbol]:
+			main_book[symbol]["sell"]["price"] = book["sell"][0]
+			main_book[symbol]["sell"]["quantity"] = book["sell"][1]
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
@@ -136,11 +105,10 @@ def main():
             bond_strategy(exchange)
 
         exchange_reply = read_from_exchange(exchange)
-        print("The exchange replied:", exchange_reply, file=sys.stderr)
+        # print("The exchange replied:", exchange_reply, file=sys.stderr)
 
         # continuous stock strat
         update_book(exchange_reply, main_book)
-        portfolio_balance(exchange, main_book)
         print(main_book)
 
     """
