@@ -124,6 +124,7 @@ def main():
         exchange_reply = read_from_exchange(exchange)
         fme_trade(exchange, exchange_reply)
         fme_update(exchange_reply)
+        print(exchange_reply)
 
 
 if __name__ == "__main__":
