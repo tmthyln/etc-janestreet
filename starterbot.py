@@ -61,9 +61,14 @@ def bond_strategy():
 
 def main():
     exchange = connect()
+    count = 0
     while True:
-        write_and_read(exchange, {"type": "hello", "team": team_name.upper()})
-        write_and_read(exchange, bond_strategy())
+        count = count + 1
+        if count == 1:
+            write_and_read(exchange, {"type": "hello", "team": team_name.upper()})
+            write_and_read(exchange, bond_strategy())
+        exchange_reply = read_from_exchange(exchange)
+        print("The exchange replied:", exchange_reply, file=sys.stderr)
 
     """
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
