@@ -100,9 +100,9 @@ def bond_update(update):
 
 # round resets every 5 mins, so don't need to reset moving avg
 stocks = {
-    "GOOG": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0},
-    "MSFT": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0},
-    "AAPL": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0}
+    "GOOG": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0, "tot_mov": 0, "net_mov": 0},
+    "MSFT": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0, "tot_mov": 0, "net_mov": 0},
+    "AAPL": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0, "tot_mov": 0, "net_mov": 0}
 }
 
 
@@ -111,7 +111,8 @@ orders = deque()
 
 
 def fmv_midpoint(symbol):
-    return int(stocks[symbol]["min"] + (stocks[symbol]["max"] - stocks[symbol]["min"]) * 0.6)
+    scale_factor = stocks[symbol]["net_mov"] / stocks[symbol]['tot_mov']
+    return int(stocks[symbol]["min"] + (stocks[symbol]["max"] - stocks[symbol]["min"]) * scale_factor)
 
 
 def fme_trade(exchange, update):
@@ -124,14 +125,23 @@ def fme_trade(exchange, update):
 
     symbol = update["symbol"]
 
-    buy_this_round = max(0, (90 - stocks[symbol]["buy_amt"]) // 10)
-    sell_this_round = max(0, (90 - stocks[symbol]["sell_amt"]) // 10)
+    buy_this_round = int(max(0, (90 - stocks[symbol]["buy_amt"]) // 10 + 1))
+    sell_this_round = int(max(0, (90 - stocks[symbol]["sell_amt"]) // 10 + 1))
 
     moving = True
 
+    # max/min fmv update
     if moving:
         # update data
         stocks[symbol]["values"].append(update["price"])
+
+        # movement update
+        stocks[symbol]['tot_mov'] += 1
+
+        if stocks[symbol]["values"][-1] > stocks[symbol]["values"][-2]:
+            stocks[symbol]['net_mov'] += 1
+        elif stocks[symbol]["values"][-1] < stocks[symbol]["values"][-2]:
+            stocks[symbol]['net_mov'] -= 1
 
         # maintain moving window
         if len(stocks[symbol]["values"]) > 1000:
