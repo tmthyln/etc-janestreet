@@ -71,10 +71,10 @@ def update_data(exchange, update):
                 "type": "add", "order_id": 10, "symbol": symbol,
                 "dir": "BUY", "price": update["sell"][0][0], "size": update["sell"][0][1]
             })
-        elif update["sell"][0][0] > moving_avgs[symbol]["value"]:
+        elif update["buy"][0][0] > moving_avgs[symbol]["value"]:
              write_to_exchange(exchange, {
                 "type": "add", "order_id": 10, "symbol": symbol,
-                "dir": "SELL", "price": update["sell"][0][0], "size": update["sell"][0][1]
+                "dir": "SELL", "price": update["buy"][0][0], "size": update["buy"][0][1]
             })
 
     # update data
