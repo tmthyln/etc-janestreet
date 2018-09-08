@@ -68,10 +68,10 @@ def bond_strategy(exchange):
     sell_this_round = 100 - bond_buy_size
 
     if buy_this_round > 0:
-        write_to_exchange(exchange, { "type": "add", "order_id": bond_id, "symbol": "BOND", "dir": "BUY", "price": 999, "size": buy_this_round })
+        write_to_exchange(exchange, { "type": "add", "order_id": bond_id, "symbol": "BOND", "dir": "BUY", "price": 998, "size": buy_this_round })
         bond_buy_size += buy_this_round
     if sell_this_round > 0:
-        write_to_exchange(exchange, { "type": "add", "order_id": bond_id + 1, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": sell_this_round})
+        write_to_exchange(exchange, { "type": "add", "order_id": bond_id + 1, "symbol": "BOND", "dir": "SELL", "price": 1002, "size": sell_this_round})
         bond_sell_size += sell_this_round
 
     bond_id += 2
