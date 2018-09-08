@@ -59,6 +59,25 @@ moving_avgs = {
 
 def trade(exchange, update):
 
+    # do trade
+    if update["type"] == "book" and update["symbol"] in ["GOOG", "MSFT", "AAPL"]:
+
+        symbol = update["symbol"]
+
+        # calculate fair price
+        weighted_total = 0
+        weight_sum = 0
+        for p, q in update["buy"] + update["sell"]:
+            weighted_total = weighted_total + p * q
+            weight_sum = weight_sum + q
+        fair_price = weighted_total / weight_sum
+
+        # execute trade
+        # buy at 1 below fair market, sell at 1 above fair market - same as bond strategy
+        write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": symbol, "dir": "BUY", "price": fair_price - 1, "size": 1 })
+        #write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": symbol, "dir": "SELL", "price": fair_price + 1, "size": 1 })
+
+    """
     # update data
     if update["type"] == "trade" and update["symbol"] in ["GOOG", "MSFT", "AAPL"]:
         symbol = update["symbol"]
@@ -68,9 +87,11 @@ def trade(exchange, update):
         moving_avgs[symbol]["value"] = old_avg * old_cnt / (old_cnt + 1) + (update["price"] / (old_cnt + 1))
         moving_avgs[symbol]["count"] = moving_avgs[symbol]["count"] + 1
 
+
         # buy at 1 below fair market, sell at 1 above fair market - same as bond strategy
         write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": symbol, "dir": "BUY", "price": moving_avgs[symbol]["value"] - 1, "size": 1 })
         write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": symbol, "dir": "SELL", "price": moving_avgs[symbol]["value"] + 1, "size": 1 })
+    """
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
