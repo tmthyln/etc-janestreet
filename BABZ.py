@@ -77,7 +77,7 @@ positions = {
 
 def track(exchange, update):
 
-    global history, orders
+    global history, order_hist
 
     # get updates on our order requests
     if update["type"] == "ack" and update["order_id"] in need_to_process: # successful order
@@ -86,7 +86,7 @@ def track(exchange, update):
         order_type = order_hist[order_id]["type"]
         convert.append([order_type]) # depending on order type, will buy or sell BABZ
         need_to_process.remove(order_id)
-        del order[order_id]
+        del order_hist[order_id]
 
 
     # real time market requests
@@ -106,7 +106,7 @@ def track(exchange, update):
 
 def trade(exchange):
 
-    global history, need_to_process, orders
+    global history, need_to_process, convert
 
     if len(history["BABZ"]["buy"]) != 20 and len(history["BABA"]["buy"]) != 20 and len(history["BABZ"]["sell"]) != 20 and len(history["BABA"]["sell"]) != 20: return
 
