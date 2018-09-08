@@ -90,16 +90,19 @@ def track(exchange, update):
         history[symbol]["buy"] = history[symbol]["buy"][-20:]
         history[symbol]["sell"] = history[symbol]["sell"][-20:]
 
-        print(n_buy, n_sell)
-        print(len(history[symbol]["buy"]), len(history[symbol]["sell"]))
-
 def trade(exchange):
 
     global history, orders
 
     # get means of BABZ, BABA buy and sell
+    BABA_buy = sum(history["BABA"]["buy"]) / len(history["BABA"]["buy"])
+    BABA_sell = sum(history["BABA"]["sell"]) / sum(history["BABA"]["sell"])
+    BABZ_buy = sum(history["BABZ"]["buy"]) / sum(history["BABZ"]["buy"])
+    BABZ_sell = sum(history["BABZ"]["sell"]) / sum(history["BABZ"]["sell"])
 
-
+    # verify differences
+    print("BABA buy: ", BABZ_sell - BABA_buy)
+    print("BABA sell: ", BABA_sell - BABZ_buy)
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
