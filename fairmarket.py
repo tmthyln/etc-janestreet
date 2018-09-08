@@ -159,17 +159,19 @@ def fme_trade(exchange, update):
     margin = 4
 
     if buy_this_round > 0 and random.random() < 1.0:
-        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "BUY", "price": int(fmv_midpoint(symbol) - 4), "size": 1})
+        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "BUY", "price": int(fmv_midpoint(symbol) - margin), "size": 1})
         orders.append(stocks_id)
         stocks[symbol]["buy_amt"] += buy_this_round
         stocks_id += 1
         print('actually bought')
     if sell_this_round > 0 and random.random() < 0.25:
-        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "SELL", "price": int(fmv_midpoint(symbol) + 4), "size": 1})
+        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "SELL", "price": int(fmv_midpoint(symbol) + margin), "size": 1})
         orders.append(stocks_id)
         stocks[symbol]["sell_amt"] += sell_this_round
         stocks_id += 1
         print('actually sold')
+
+    print("Midpoint: " + str(fmv_midpoint(symbol)))
 
     # cancel orders more than x orders old
     for order in orders:
