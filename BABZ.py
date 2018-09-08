@@ -133,8 +133,8 @@ def trade(exchange):
         "type": "add", "order_id": sell_order_id, "symbol": "BABA",
         "dir": "BUY", "price": BABA_sell - 1, "size": 1 # -1 to gauruntee that someone will buy
     })
-    need_to_process.append(buy_order_id)
-    need_to_process.append(sell_order_id)
+    need_to_process.append([buy_order_id, BABA_buy + 1])
+    need_to_process.append([sell_order_id, BABA_sell - 1])
 
 
     # todo: convert
