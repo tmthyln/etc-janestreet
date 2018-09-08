@@ -1,9 +1,3 @@
-"""
-
-BABZ - BABA arbitrage
-
-"""
-
 #!/usr/bin/python
 
 # ~~~~~==============   HOW TO RUN   ==============~~~~~
@@ -22,7 +16,7 @@ import json
 team_name="SEEKINGALPHA"
 # This variable dictates whether or not the bot is connecting to the prod
 # or test exchange. Be careful with this switch!
-test_mode = True
+test_mode = False
 
 # This setting changes which test exchange is connected to.
 # 0 is prod-like
@@ -64,47 +58,9 @@ def bond_strategy(exchange):
     write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size })
     write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": size })
 
-import sys
-
-# initialize buy value to very low - i.e. market buys for low
-# initialize sell value to very high - i.e. market sells for very high
-main_book = {
-    "BABZ": { "buy": { "price": -sys.maxint - 1, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } },
-    "BABA": { "buy": { "price": -sys.maxint - 1, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } }
-}
-
-def update_book(info, book):
-
-	changed = False
-
-	if info["type"] == "book":
-
-		symbol = info["symbol"]
-		if symbol not in ["BABA", "BABZ"]: return
-
-		if "buy" in info:
-			max_buy = -sys.maxint - 1
-			for order in info["buy"]:
-				# get max of current set of orders
-				if order[0] > max_buy:
-					book[symbol]["buy"]["price"] = order[0]
-					book[symbol]["buy"]["quantity"] = order[1]
-					max_buy = order[0]
-					if not changed: changed = True
-		if "sell" in info:
-			min_sell = sys.maxint
-			for order in info["sell"]:
-				if order[0] < min_sell:
-					book[symbol]["sell"]["price"] = order[0]
-					book[symbol]["sell"]["quantity"] = order[1]
-					min_sell = order[0]
-					if not changed: changed = True
-
-	return changed
+def moving_avg():
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
-
-import tableprint as tp
 
 def main():
     exchange = connect()
@@ -114,11 +70,26 @@ def main():
     exchange_reply = read_from_exchange(exchange)
     print("The exchange replied:", exchange_reply, file=sys.stderr)
 
+    count = 0
     while True:
+        count = count + 1
+        if count == 1:
+            bond_strategy(exchange)
+        exchange_reply = read_from_exchange(exchange)
+        print("The exchange replied:", exchange_reply, file=sys.stderr)
 
-    	exchange_reply = read_from_exchange(exchange)
-    	update_book(exchange_reply, main_book)
-    	print(main_book, end='\r')
+    """
+    write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
+    hello_from_exchange = read_from_exchange(exchange)
+    # A common mistake people make is to call write_to_exchange() > 1
+    # time for every read_from_exchange() response.
+    # Since many write messages generate marketdata, this will cause an
+    # exponential explosion in pending messages. Please, don't do that!
+    print("The exchange replied:", hello_from_exchange, file=sys.stderr)
+
+    write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
+    print("The exchange replied:", hello_from_exchange, file=sys.stderr)
+    """
 
 if __name__ == "__main__":
     main()
