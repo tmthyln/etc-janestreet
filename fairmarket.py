@@ -148,7 +148,7 @@ def fme_trade(exchange, update):
                 stocks[symbol]['net_mov'] -= 1
 
         # maintain moving window
-        if len(stocks[symbol]["values"]) > 1000:
+        if len(stocks[symbol]["values"]) > 500:
             stocks[symbol]["values"].popleft()
 
         # update max/min
@@ -161,22 +161,23 @@ def fme_trade(exchange, update):
     # update predicted fmv
     stocks[symbol]["fmv"].append(fmv_midpoint(symbol))
 
-    if len(stocks[symbol]["fmv"]) > 100:
+    if len(stocks[symbol]["fmv"]) > 75:
         stocks[symbol]["fmv"].popleft()
 
     curr_fmv = sum(stocks[symbol]["fmv"]) / len(stocks[symbol]["fmv"])
 
     # buy or sell as necessary
-    margin = 6
+    buy_margin = 10
+    sell_margin = 6
 
     if buy_this_round > 0 and random.random() < 1.0:
-        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "BUY", "price": curr_fmv - margin, "size": 1})
+        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "BUY", "price": curr_fmv - buy_margin, "size": 1})
         orders.append(stocks_id)
         stocks[symbol]["buy_amt"] += buy_this_round
         stocks_id += 1
         print('actually bought')
     if sell_this_round > 0 and random.random() < 0.25:
-        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "SELL", "price": curr_fmv + margin, "size": 1})
+        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "SELL", "price": curr_fmv + sell_margin, "size": 1})
         orders.append(stocks_id)
         stocks[symbol]["sell_amt"] += sell_this_round
         stocks_id += 1
