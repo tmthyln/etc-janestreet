@@ -210,7 +210,7 @@ def main():
             #bond_strategy(exchange)
 
         exchange_reply = read_from_exchange(exchange)
-        # print("The exchange replied:", exchange_reply, file=sys.stderr)
+        print("The exchange replied:", exchange_reply, file=sys.stderr)
 
         # continuous stock strat
         if update_book(exchange_reply, main_book):
