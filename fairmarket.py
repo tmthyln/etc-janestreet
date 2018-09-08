@@ -138,10 +138,11 @@ def fme_trade(exchange, update):
         # movement update
         stocks[symbol]['tot_mov'] += 1
 
-        if stocks[symbol]["values"][-1] > stocks[symbol]["values"][-2]:
-            stocks[symbol]['net_mov'] += 1
-        elif stocks[symbol]["values"][-1] < stocks[symbol]["values"][-2]:
-            stocks[symbol]['net_mov'] -= 1
+        if len(stocks[symbol]["values"]) >= 2:
+            if stocks[symbol]["values"][-1] > stocks[symbol]["values"][-2]:
+                stocks[symbol]['net_mov'] += 1
+            elif stocks[symbol]["values"][-1] < stocks[symbol]["values"][-2]:
+                stocks[symbol]['net_mov'] -= 1
 
         # maintain moving window
         if len(stocks[symbol]["values"]) > 1000:
