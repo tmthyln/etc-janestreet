@@ -74,8 +74,6 @@ def fme_trade(exchange, update):
     if update['symbol'] not in ["GOOG", "MSFT", "AAPL"]:
         return
 
-    print('something to think about')
-
     # update data
     symbol = update["symbol"]
 
@@ -85,6 +83,8 @@ def fme_trade(exchange, update):
     # update max/min
     stocks[symbol]["max"] = max(update["price"], stocks[symbol]["max"])
     stocks[symbol]["min"] = min(update["price"], stocks[symbol]["min"])
+
+    print(fmv_midpoint(symbol))
 
     if buy_this_round > 0:
         write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": symbol, "dir": "BUY", "price": fmv_midpoint(symbol) - 2, "size": 1})
@@ -116,8 +116,7 @@ def main():
 
     # Hello
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
-    exchange_reply = read_from_exchange(exchange)
-    print("The exchange replied:", exchange_reply, file=sys.stderr)
+    _ = read_from_exchange(exchange)
 
     while True:
 
