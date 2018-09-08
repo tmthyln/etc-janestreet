@@ -105,7 +105,7 @@ def baba_arbitrage(exchange, book):
 
 	if max(option1, option2) > 0:
 
-		if option1 < option2:
+		if option1 > option2:
 
 			write_to_exchange(exchange, {
 				"type": "add", "order_id": 10, "symbol": "BABZ", "dir": "BUY",
