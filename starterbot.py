@@ -50,23 +50,27 @@ def write_and_read(exchange, command):
 
 # ~~~~~============== TRADING LOGIC ==============~~~~~
 
-def bond_strategy():
+def bond_strategy(exchange):
     # always buy bond for < 1000 and sell bond for > 1000
-    order_id = 1
-    #size = 1
     print("BOND STRATEGY ------------------")
-    return { "type": "add", "order_id": order_id, "symbol": "BOND", "dir": "BUY", "price": 999, "size": 1 }
+    write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BOND", "dir": "BUY", "price": 999, "size": 5 })
+    write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": "BOND", "dir": "BUY", "price": 1001, "size": 5 })
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
 def main():
     exchange = connect()
+
+    # Hello
+    write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
+    exchange_reply = read_from_exchange(exchange)
+    print("The exchange replied:", exchange_reply, file=sys.stderr)
+
     count = 0
     while True:
         count = count + 1
         if count == 1:
-            write_and_read(exchange, {"type": "hello", "team": team_name.upper()})
-            write_and_read(exchange, bond_strategy())
+            bond_strategy(exchange)
         exchange_reply = read_from_exchange(exchange)
         print("The exchange replied:", exchange_reply, file=sys.stderr)
 
