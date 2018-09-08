@@ -57,7 +57,46 @@ def write_and_read(exchange, command):
     print("The exchange replied:", exchange_reply, file=sys.stderr)
 
 
-# ~~~~~============== TRADING LOGIC ==============~~~~~
+# ~~~~~============== BONDS LOGIC ==============~~~~~
+
+bond_buy_size = 0
+bond_sell_size = 0
+
+bond_id = 24000
+
+
+def bond_strategy(exchange):
+    # always buy bond for < 1000 and sell bond for > 1000
+    global bond_buy_size, bond_sell_size, bond_id
+
+    buy_this_round = 100 - bond_buy_size
+    sell_this_round = 100 - bond_buy_size
+
+    if buy_this_round > 0:
+        write_to_exchange(exchange, { "type": "add", "order_id": bond_id, "symbol": "BOND", "dir": "BUY", "price": 999, "size": buy_this_round })
+        bond_buy_size += buy_this_round
+    if sell_this_round > 0:
+        write_to_exchange(exchange, { "type": "add", "order_id": bond_id + 1, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": sell_this_round})
+        bond_sell_size += sell_this_round
+
+    bond_id += 2
+
+
+def bond_update(update):
+    global bond_buy_size, bond_sell_size
+
+    if update['type'] != 'fill':
+        return
+    if update['symbol'] != 'BOND':
+        return
+
+    if update['dir'] == 'BUY':
+        bond_buy_size -= update['size']
+    else:
+        bond_sell_size -= update['size']
+
+
+# ~~~~~============== STOCKS LOGIC ==============~~~~~
 
 # round resets every 5 mins, so don't need to reset moving avg
 stocks = {
@@ -152,11 +191,12 @@ def main():
     _ = read_from_exchange(exchange)
 
     while True:
-
+        bond_strategy(exchange)
         exchange_reply = read_from_exchange(exchange)
         fme_trade(exchange, exchange_reply)
         fme_update(exchange_reply)
-        print(exchange_reply)
+        # print(exchange_reply)
+        bond_update(exchange_reply)
 
 
 if __name__ == "__main__":
