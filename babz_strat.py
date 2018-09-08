@@ -90,7 +90,7 @@ def update_book(info, book):
 		if "sell" in info:
 			min_sell = sys.maxint
 			for order in info["sell"]:
-				if order[0] < min_sell
+				if order[0] < min_sell:
 					book[symbol]["sell"]["price"] = order[0]
 					book[symbol]["sell"]["quantity"] = order[1]
 					min_sell = order[0]
