@@ -1,3 +1,5 @@
+### DOESNT WORK
+
 import sys
 
 # initialize buy value to very low - i.e. market buys for low
