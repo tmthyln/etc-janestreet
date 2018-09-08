@@ -134,7 +134,6 @@ def main():
 
         exchange_reply = read_from_exchange(exchange)
         trade(exchange, exchange_reply)
-        update(exchange_reply)
 
 if __name__ == "__main__":
     main()
