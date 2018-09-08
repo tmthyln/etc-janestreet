@@ -63,9 +63,9 @@ import sys
 # initialize buy value to very low - i.e. market buys for low
 # initialize sell value to very high - i.e. market sells for very high
 main_book = {
-    "GOOG": { "buy": { "price": sys.minint, "quantity": 0 } "sell": { "price": sys.maxint, "quantity": 0 } },
-    "MSFT": { "buy": { "price": sys.minint, "quantity": 0 } "sell": { "price": sys.maxint, "quantity": 0 } },
-    "AAPL": { "buy": { "price": sys.minint, "quantity": 0 } "sell": { "price": sys.maxint, "quantity": 0 } },
+    "GOOG": { "buy": { "price": sys.minint, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } },
+    "MSFT": { "buy": { "price": sys.minint, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } },
+    "AAPL": { "buy": { "price": sys.minint, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } },
 }
 
 def update_book(info, book):
