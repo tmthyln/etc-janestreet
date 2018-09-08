@@ -114,11 +114,12 @@ def main():
     exchange_reply = read_from_exchange(exchange)
     print("The exchange replied:", exchange_reply, file=sys.stderr)
 
-    while True:
+    with tp.TableContext("ABC") as t:
+    	while True:
 
-    	exchange_reply = read_from_exchange(exchange)
-    	update_book(exchange_reply, main_book)
-    	print(main_book, end='\r')
+    		exchange_reply = read_from_exchange(exchange)
+    		update_book(exchange_reply, main_book)
+    		print(main_book, end='\r')
 
 if __name__ == "__main__":
     main()

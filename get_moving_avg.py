@@ -50,15 +50,23 @@ def write_and_read(exchange, command):
 
 # ~~~~~============== TRADING LOGIC ==============~~~~~
 
-def bond_strategy(exchange):
-    # always buy bond for < 1000 and sell bond for > 1000
-    print("BOND STRATEGY ------------------")
- 
-    size = 100
-    write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size })
-    write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": size })
+# round resets every 5 mins, so don't need to reset moving avg
+moving_avgs = {
+    "GOOG": { "value": 0, "count": 0 },
+    "MSFT": { "value": 0, "count": 0 },
+    "AAPL": { "value": 0, "count": 0 }
+    ""
+}
 
-def moving_avg():
+def update_data(update):
+
+    if update["type"] == "trade" and update["symbol"] in ["GOOG", "MSFT", "AAPL"]:
+        # update moving avg
+        symbol = update["symbol"]
+        old_avg = moving_avgs[symbol]["value"]
+        old_cnt = moving_avgs[symbol]["count"]
+        moving_avgs[symbol]["value"] = old_avg * old_cnt / (old_cnt + 1) + (update["price"] / (old_cnt + 1))
+
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
@@ -70,26 +78,12 @@ def main():
     exchange_reply = read_from_exchange(exchange)
     print("The exchange replied:", exchange_reply, file=sys.stderr)
 
-    count = 0
     while True:
-        count = count + 1
-        if count == 1:
-            bond_strategy(exchange)
+
         exchange_reply = read_from_exchange(exchange)
-        print("The exchange replied:", exchange_reply, file=sys.stderr)
-
-    """
-    write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
-    hello_from_exchange = read_from_exchange(exchange)
-    # A common mistake people make is to call write_to_exchange() > 1
-    # time for every read_from_exchange() response.
-    # Since many write messages generate marketdata, this will cause an
-    # exponential explosion in pending messages. Please, don't do that!
-    print("The exchange replied:", hello_from_exchange, file=sys.stderr)
-
-    write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
-    print("The exchange replied:", hello_from_exchange, file=sys.stderr)
-    """
+        update_data(exchange_reply)
+        print(moving_avgs)
+        #print("The exchange replied:", exchange_reply, file=sys.stderr)
 
 if __name__ == "__main__":
     main()
