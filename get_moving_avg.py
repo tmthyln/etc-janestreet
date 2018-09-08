@@ -59,13 +59,26 @@ moving_avgs = {
 
 def update_data(update):
 
+    fudge = 5
+    symbol = update["symbol"]
+
+    # preform trades
+    if update["type"] == "book" and update["symbol"] in ["GOOG", "MSFT", "AAPL"]:
+        if update["sell"][0][0] < moving_avgs[symbol]["value"] - fudge:
+            write_to_exchange(exchange, {
+                "type": "add", "order_id": 10, "symbol": symbol,
+                "dir": "BUY", "price": update["sell"][0][0], "size": update["sell"][0][1]
+            })
+
+    # update data
     if update["type"] == "trade" and update["symbol"] in ["GOOG", "MSFT", "AAPL"]:
         # update moving avg
-        symbol = update["symbol"]
         old_avg = moving_avgs[symbol]["value"]
         old_cnt = moving_avgs[symbol]["count"]
         moving_avgs[symbol]["value"] = old_avg * old_cnt / (old_cnt + 1) + (update["price"] / (old_cnt + 1))
         moving_avgs[symbol]["count"] = moving_avgs[symbol]["count"] + 1
+
+
 
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
