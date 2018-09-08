@@ -159,7 +159,7 @@ def fme_trade(exchange, update):
         stocks[symbol]["min"] = min(stocks[symbol]["min"], update["price"])
 
     # buy or sell as necessary
-    margin = 4
+    margin = 6
 
     if buy_this_round > 0 and random.random() < 1.0:
         write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "BUY", "price": int(fmv_midpoint(symbol) - margin), "size": 1})
