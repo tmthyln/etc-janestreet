@@ -74,6 +74,8 @@ def fme_trade(exchange, update):
     if update['symbol'] not in ["GOOG", "MSFT", "AAPL"]:
         return
 
+    print('something to think about')
+
     # update data
     symbol = update["symbol"]
 
