@@ -76,7 +76,7 @@ def trade(exchange, update):
         # execute trade
         # buy at 1 below fair market, sell at 1 above fair market - same as bond strategy
         write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": symbol, "dir": "BUY", "price": fair_price - 1, "size": 1 })
-        #write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": symbol, "dir": "SELL", "price": fair_price + 1, "size": 1 })
+        write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": symbol, "dir": "SELL", "price": fair_price + 1, "size": 1 })
 
     """
     # update data
