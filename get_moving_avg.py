@@ -64,6 +64,8 @@ def update_data(update):
     # preform trades
     if update["type"] == "book" and update["symbol"] in ["GOOG", "MSFT", "AAPL"]:
         symbol = update["symbol"]
+        print(update["sell"][0])
+        print(moving_avgs[symbol])
         if update["sell"][0][0] < moving_avgs[symbol]["value"] - fudge:
             write_to_exchange(exchange, {
                 "type": "add", "order_id": 10, "symbol": symbol,
@@ -96,7 +98,7 @@ def main():
 
         exchange_reply = read_from_exchange(exchange)
         update_data(exchange_reply)
-        print(moving_avgs)
+        #print(moving_avgs)
         #print("The exchange replied:", exchange_reply, file=sys.stderr)
 
 if __name__ == "__main__":
