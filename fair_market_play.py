@@ -93,19 +93,20 @@ def trade(exchange, update):
 
 
         # buy at 1 below fair market, sell at 1 above fair market - same as bond strategy
-<<<<<<< HEAD
         write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": symbol, "dir": "BUY", "price": moving_avgs[symbol]["value"] - 1, "size": 1 })
         write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": symbol, "dir": "SELL", "price": moving_avgs[symbol]["value"] + 1, "size": 1 })
     """
-=======
 
+    """
         if buy_this_round > 0:
             write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": symbol, "dir": "BUY", "price": moving_avgs[symbol]["value"] - 1, "size": 1 })
             moving_avgs[symbol]["buy_amt"] += buy_this_round
         if sell_this_round > 0:
             write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": symbol, "dir": "SELL", "price": moving_avgs[symbol]["value"] + 1, "size": 1 })
             moving_avgs[symbol]["sell_amt"] += sell_this_round
+    """
 
+"""
 def update(update):
     if update['type'] != 'fill':
         return
@@ -117,7 +118,7 @@ def update(update):
         moving_avgs[update['symbol']]['buy_amt'] -= update['size']
     else:
         moving_avgs[update['symbol']]['sell_amt'] -= update['size']
->>>>>>> d7fe3ebe9341f0e89eef011ff2fe443acfd6b870
+"""
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
