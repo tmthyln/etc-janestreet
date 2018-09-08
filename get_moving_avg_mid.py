@@ -10,6 +10,7 @@ from __future__ import print_function
 import sys
 import socket
 import json
+import time
 
 # ~~~~~============== CONFIGURATION  ==============~~~~~
 # replace REPLACEME with your team name!
@@ -98,8 +99,8 @@ def main():
 
     # Hello
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
-    exchange_reply = read_from_exchange(exchange)
-    print("The exchange replied:", exchange_reply, file=sys.stderr)
+    time.sleep(1)  # wait a bit for the ack hello before running
+    _ = read_from_exchange(exchange)  # clear the hello acknowledgement from buffer
 
     while True:
 
