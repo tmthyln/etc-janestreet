@@ -54,10 +54,13 @@ def write_and_read(exchange, command):
 moving_avgs = {
     "GOOG": { "value": 0, "count": 0 },
     "MSFT": { "value": 0, "count": 0 },
-    "AAPL": { "value": 0, "count": 0 }
+    "AAPL": { "value": 0, "count": 0 },
+    "BABA": { "value": 0, "count": 0 },
+    "BABZ": { "value": 0, "count": 0 },
+    "XLK": { "value": 0, "count": 0 }
 }
 
-bought = { "GOOG": 0, "MSFT": 0, "AAPL": 0 }
+bought = { "GOOG": 0, "MSFT": 0, "AAPL": 0, "BABA": 0, "BABZ": 0, "XLK": 0 }
 order_hist = {}
 curr_order = 0
 
@@ -83,7 +86,7 @@ def trade(exchange, update):
         if ord_type == "SELL": bought[ticker] = bought[ticker] - 1
 
     # do trade
-    if update["type"] == "book" and update["symbol"] in ["GOOG", "MSFT", "AAPL"] and len(update["buy"] + update["sell"]) > 0:
+    if update["type"] == "book" and update["symbol"] in ["GOOG", "MSFT", "AAPL", "BABA"] and len(update["buy"] + update["sell"]) > 0:
 
         symbol = update["symbol"]
 
@@ -98,7 +101,7 @@ def trade(exchange, update):
 
         # execute trade
         # buy at 1 below fair market, sell at 1 above fair market - same as bond strategy
-        if bought[symbol] >= -10 and bought[symbol] <= 10:
+        if bought[symbol] > -10 and bought[symbol] < 10:
             write_to_exchange(exchange, {
                 "type": "add", "order_id": new_order("BUY", symbol), "symbol": symbol, "dir": "BUY", "price": fair_price - 1, "size": 1
             })
