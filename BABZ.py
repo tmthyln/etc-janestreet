@@ -10,7 +10,6 @@ from __future__ import print_function
 import sys
 import socket
 import json
-import numpy as np
 
 # ~~~~~============== CONFIGURATION  ==============~~~~~
 # replace REPLACEME with your team name!
