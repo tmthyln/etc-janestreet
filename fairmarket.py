@@ -200,12 +200,12 @@ def main():
     _ = read_from_exchange(exchange)
 
     while True:
-        bond_strategy(exchange)
+        # bond_strategy(exchange)
         exchange_reply = read_from_exchange(exchange)
         fme_trade(exchange, exchange_reply)
         fme_update(exchange_reply)
         # print(exchange_reply)
-        bond_update(exchange_reply)
+        # bond_update(exchange_reply)
 
 
 if __name__ == "__main__":
