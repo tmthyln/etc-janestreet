@@ -102,6 +102,7 @@ def update_book(info, book):
 
 	return changed
 
+"""
 def baba_arbitrage(exchange, book):
 
 
@@ -118,15 +119,10 @@ def baba_arbitrage(exchange, book):
 		write_to_exchange(exchange, {
 			"type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": option1quant
 		})
-		"""
 		write_to_exchange(exchange, {
 			"type": "add", "order_id": 10, "symbol": "BABA", "dir": "SELL",
 			"price": book["BABZ"]["sell"]["price"], "size": option1quant
 		})
-		"""
-
-
-	"""
 
 	
 	option2quant = min(book["BABA"]["sell"]["quantity"], book["BABZ"]["buy"]["quantity"])
@@ -171,9 +167,7 @@ def baba_arbitrage(exchange, book):
 				"type": "add", "order_id": 14, "symbol": "BABZ", "dir": "SELL",
 				"price": book["BABZ"]["buy"]["price"], "size": option2quant
 			})
-	"""
 
-"""
 Does something
 
 option1quant = min(book["BABZ"]["sell"]["quantity"], book["BABA"]["buy"]["quantity"])
@@ -207,8 +201,8 @@ def main():
         # call bond strat once
         count = count + 1
         if count == 1:
-        	write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY", "price": 10000 , "size": option1quant })
-			write_to_exchange(exchange, { "type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": option1quant })
+        	write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY", "price": 10000 , "size": 10 })
+			write_to_exchange(exchange, { "type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": 10 })
             #bond_strategy(exchange)
 
         exchange_reply = read_from_exchange(exchange)
