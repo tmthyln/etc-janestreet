@@ -118,6 +118,7 @@ def main():
 
         exchange_reply = read_from_exchange(exchange)
         track(exchange, exchange_reply)
+        trade(exchange)
 
     """
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
