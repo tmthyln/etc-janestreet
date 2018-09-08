@@ -59,7 +59,6 @@ bond_id = 24000
 
 def bond_strategy(exchange):
     # always buy bond for < 1000 and sell bond for > 1000
-    print("BOND STRATEGY ------------------")
     global bond_buy_size, bond_sell_size, bond_id
 
     buy_this_round = 100 - bond_buy_size
@@ -88,7 +87,7 @@ def bond_update(update):
     else:
         bond_sell_size -= update['size']
 
-    print(bond_buy_size, bond_sell_size)
+    # print(bond_buy_size, bond_sell_size)
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
@@ -99,7 +98,7 @@ def main():
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
     time.sleep(1) # wait a bit for the ack hello before running
     exchange_reply = read_from_exchange(exchange)
-    print("The exchange replied:", exchange_reply, file=sys.stderr)
+    #print("The exchange replied:", exchange_reply, file=sys.stderr)
 
     while True:
         # strategies to run
@@ -107,7 +106,7 @@ def main():
 
         # reply from server
         exchange_reply = read_from_exchange(exchange)
-        print("The exchange replied:", exchange_reply, file=sys.stderr)
+        #print("The exchange replied:", exchange_reply, file=sys.stderr)
 
         # update strategies
         bond_update(exchange_reply)
