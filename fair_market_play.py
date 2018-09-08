@@ -71,6 +71,7 @@ def trade(exchange, update):
             weighted_total = weighted_total + p * q
             weight_sum = weight_sum + q
         fair_price = weighted_total / weight_sum
+        print(symbol, fair_price)
 
         # execute trade
         # buy at 1 below fair market, sell at 1 above fair market - same as bond strategy
