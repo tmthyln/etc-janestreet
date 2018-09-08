@@ -65,7 +65,7 @@ stocks = {
 
 
 def fmv_midpoint(symbol):
-    return (stocks[symbol][max] - stocks[symbol][min]) / 2
+    return (stocks[symbol]["max"] - stocks[symbol]["min"]) / 2
 
 
 def fme_trade(exchange, update):
