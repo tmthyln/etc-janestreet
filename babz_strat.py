@@ -81,7 +81,7 @@ def update_book(info, book):
 
 		if "buy" in info:
 			max_buy = -sys.maxint - 1
-			for order in info["buy"]
+			for order in info["buy"]:
 				# get max of current set of orders
 				if order[0] > max_buy:
 					book[symbol]["buy"]["price"] = order[0]
@@ -89,7 +89,7 @@ def update_book(info, book):
 					max_buy = order[0]
 		if "sell" in info:
 			min_sell = sys.maxint
-			for order in info["sell"]
+			for order in info["sell"]:
 				if order[0] < min_sell
 					book[symbol]["sell"]["price"] = order[0]
 					book[symbol]["sell"]["quantity"] = order[1]
