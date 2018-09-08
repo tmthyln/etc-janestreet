@@ -115,7 +115,7 @@ def baba_arbitrage(exchange, book):
 			# convert
 			write_to_exchange(exchange, {
 				"type": "convert", "order_id": 12, "symbol": "BABZ",
-				"dir": "BUY", "size": option1quant
+				"dir": "SELL", "size": option1quant
 			})
 
 			write_to_exchange(exchange, {
