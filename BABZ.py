@@ -96,9 +96,9 @@ def trade(exchange):
 
     # get means of BABZ, BABA buy and sell
     BABA_buy = sum(history["BABA"]["buy"]) / len(history["BABA"]["buy"])
-    BABA_sell = sum(history["BABA"]["sell"]) / sum(history["BABA"]["sell"])
-    BABZ_buy = sum(history["BABZ"]["buy"]) / sum(history["BABZ"]["buy"])
-    BABZ_sell = sum(history["BABZ"]["sell"]) / sum(history["BABZ"]["sell"])
+    BABA_sell = sum(history["BABA"]["sell"]) / len(history["BABA"]["sell"])
+    BABZ_buy = sum(history["BABZ"]["buy"]) / len(history["BABZ"]["buy"])
+    BABZ_sell = sum(history["BABZ"]["sell"]) / len(history["BABZ"]["sell"])
 
     # verify differences
     print("BABA buy: ", BABZ_sell - BABA_buy)
