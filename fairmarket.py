@@ -128,8 +128,8 @@ def fme_trade(exchange, update):
 
     symbol = update["symbol"]
 
-    buy_this_round = int(max(0, (90 - stocks[symbol]["buy_amt"]) // 10 + 1))
-    sell_this_round = int(max(0, (90 - stocks[symbol]["sell_amt"]) // 10 + 1))
+    buy_this_round = int(max(0, (90 - stocks[symbol]["buy_amt"]) // 7 + 1))
+    sell_this_round = int(max(0, (90 - stocks[symbol]["sell_amt"]) // 7 + 1))
 
     moving = True
 
@@ -161,7 +161,7 @@ def fme_trade(exchange, update):
     # update predicted fmv
     stocks[symbol]["fmv"].append(fmv_midpoint(symbol))
 
-    if len(stocks[symbol]["fmv"]) > 50:
+    if len(stocks[symbol]["fmv"]) > 100:
         stocks[symbol]["fmv"].popleft()
 
     curr_fmv = sum(stocks[symbol]["fmv"]) / len(stocks[symbol]["fmv"])
@@ -186,7 +186,7 @@ def fme_trade(exchange, update):
 
     # cancel orders more than x orders old
     for order in orders:
-        if order + 15 < stocks_id:
+        if order + 20 < stocks_id:
             write_to_exchange(exchange, {'type': 'cancel', 'order_id': order})
         else:
             break
