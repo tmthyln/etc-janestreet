@@ -143,7 +143,8 @@ def trade(exchange):
         """
         need_to_process.append(sell_order_id)
 
-        print("DID SOMETHING WITH BABA", buy_order_id, sell_order_id)
+        #print("DID SOMETHING WITH BABA", buy_order_id, sell_order_id)
+        print("DID SOMETHING WITH BABA", buy_order_id)
         print("Current BABA order spread: ", buy_price, sell_price)
         print("Current BABZ spread:", BABZ_buy, BABZ_sell)
 
