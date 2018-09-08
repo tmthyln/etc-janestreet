@@ -63,8 +63,10 @@ def trade(update):
     if update["type"] == "book" and update["symbol"] in ["GOOG", "MSFT", "AAPL"]:
 
         symbol = update["symbol"]
+        print("TRADING: ", symbol)
 
         if len(update["buy"]) > 0 and len(update["sell"]) > 0 and (update["sell"][0][0] - update["buy"][0][0]) > 0:
+            print("MADE TRADE")
 
             write_to_exchange(exchange, {
                 "type": "add", "order_id": 10, "symbol": symbol,
@@ -89,7 +91,7 @@ def main():
     while True:
 
         exchange_reply = read_from_exchange(exchange)
-        print("The exchange replied:", exchange_reply, file=sys.stderr)
+        #print("The exchange replied:", exchange_reply, file=sys.stderr)
 
 
 if __name__ == "__main__":
