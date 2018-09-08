@@ -16,7 +16,7 @@ import json
 team_name="SEEKINGALPHA"
 # This variable dictates whether or not the bot is connecting to the prod
 # or test exchange. Be careful with this switch!
-test_mode = True
+test_mode = False
 
 # This setting changes which test exchange is connected to.
 # 0 is prod-like
@@ -50,45 +50,31 @@ def write_and_read(exchange, command):
 
 # ~~~~~============== TRADING LOGIC ==============~~~~~
 
-# round resets every 5 mins, so don't need to reset moving avg
-moving_avgs = {
-    "GOOG": { "value": 0, "count": 0 },
-    "MSFT": { "value": 0, "count": 0 },
-    "AAPL": { "value": 0, "count": 0 }
-}
+def bond_strategy(exchange):
+    # always buy bond for < 1000 and sell bond for > 1000
+    print("BOND STRATEGY ------------------")
+ 
+    size = 100
+    write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size })
+    write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": size })
 
-def update_data(exchange, update):
+def trade(update):
 
-    fudge = 0
-
-    # preform trades
     if update["type"] == "book" and update["symbol"] in ["GOOG", "MSFT", "AAPL"]:
+
         symbol = update["symbol"]
 
-        print(symbol, moving_avgs[symbol])
-        
-        if len(update["sell"]) > 0 and update["sell"][0][0] < moving_avgs[symbol]["value"]:
+        if len(update["buy"]) > 0 and len(update["sell"]) > 0 and (update["sell"][0][0] - update["buy"][0][0]) > 0:
+
             write_to_exchange(exchange, {
                 "type": "add", "order_id": 10, "symbol": symbol,
-                "dir": "BUY", "price": update["sell"][0][0], "size": update["sell"][0][1]
+                "dir": "BUY", "price": update["buy"][0][0] + 1, "size": 1
             })
-        elif len(update["buy"]) > 0 and update["buy"][0][0] > moving_avgs[symbol]["value"]:
+            
             write_to_exchange(exchange, {
-                "type": "add", "order_id": 10, "symbol": symbol,
-                "dir": "SELL", "price": update["buy"][0][0], "size": update["buy"][0][1]
+                "type": "add", "order_id": 12, "symbol": symbol,
+                "dir": "SELL", "price": update["sell"][0][0] - 1, "size": 1
             })
-
-    # update data
-    if update["type"] == "trade" and update["symbol"] in ["GOOG", "MSFT", "AAPL"]:
-        symbol = update["symbol"]
-        # update moving avg
-        old_avg = moving_avgs[symbol]["value"]
-        old_cnt = moving_avgs[symbol]["count"]
-        moving_avgs[symbol]["value"] = old_avg * old_cnt / (old_cnt + 1) + (update["price"] / (old_cnt + 1))
-        moving_avgs[symbol]["count"] = moving_avgs[symbol]["count"] + 1
-
-
-
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
@@ -103,9 +89,8 @@ def main():
     while True:
 
         exchange_reply = read_from_exchange(exchange)
-        update_data(exchange, exchange_reply)
-        #print(moving_avgs)
-        #print("The exchange replied:", exchange_reply, file=sys.stderr)
+        print("The exchange replied:", exchange_reply, file=sys.stderr)
+
 
 if __name__ == "__main__":
     main()
