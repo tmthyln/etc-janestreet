@@ -55,9 +55,8 @@ def bond_strategy(exchange):
     print("BOND STRATEGY ------------------")
  
     size = 50
-    write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size })
+    write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size * 2 })
     write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": size })
-    write_to_exchange(exchange, { "type": "add", "order_id": 20, "symbol": "BOND", "dir": "BUY", "price": 998, "size": size })
     write_to_exchange(exchange, { "type": "add", "order_id": 22, "symbol": "BOND", "dir": "SELL", "price": 1002, "size": size })
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
