@@ -61,8 +61,9 @@ def bond_strategy():
 
 def main():
     exchange = connect()
-    write_and_read(exchange, {"type": "hello", "team": team_name.upper()})
-    write_and_read(exchange, bond_strategy())
+    while True:
+        write_and_read(exchange, {"type": "hello", "team": team_name.upper()})
+        write_and_read(exchange, bond_strategy())
 
     """
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
