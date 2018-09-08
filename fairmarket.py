@@ -72,7 +72,7 @@ orders = deque()
 
 
 def fmv_midpoint(symbol):
-    return stocks[symbol]["min"] + (stocks[symbol]["max"] - stocks[symbol]["min"]) * 0.8
+    return stocks[symbol]["min"] + (stocks[symbol]["max"] - stocks[symbol]["min"]) * 0.6
 
 
 def fme_trade(exchange, update):
@@ -85,8 +85,8 @@ def fme_trade(exchange, update):
 
     symbol = update["symbol"]
 
-    buy_this_round = (100 - stocks[symbol]["buy_amt"]) // 10
-    sell_this_round = (100 - stocks[symbol]["sell_amt"]) // 10
+    buy_this_round = (90 - stocks[symbol]["buy_amt"]) // 10
+    sell_this_round = (90 - stocks[symbol]["sell_amt"]) // 10
 
     moving = True
 
