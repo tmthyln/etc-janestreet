@@ -60,9 +60,9 @@ def write_and_read(exchange, command):
 
 # round resets every 5 mins, so don't need to reset moving avg
 stocks = {
-    "GOOG": {"max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0},
-    "MSFT": {"max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0},
-    "AAPL": {"max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0}
+    "GOOG": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0},
+    "MSFT": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0},
+    "AAPL": {"values": deque(), "max": 0, "min": sys.maxint, "buy_amt": 0, "sell_amt": 0}
 }
 
 
@@ -82,15 +82,21 @@ def fme_trade(exchange, update):
     if update['symbol'] not in ["GOOG", "MSFT", "AAPL"]:
         return
 
-    # update data
     symbol = update["symbol"]
 
     buy_this_round = (100 - stocks[symbol]["buy_amt"]) // 10
     sell_this_round = (100 - stocks[symbol]["sell_amt"]) // 10
 
+    # update data
+    stocks[symbol]["values"].append(update["price"])
+
+    # maintain moving window
+    if len(stocks[symbol]["values"]) > 50:
+        stocks[symbol]["values"].popleft()
+
     # update max/min
-    stocks[symbol]["max"] = max(update["price"], stocks[symbol]["max"])
-    stocks[symbol]["min"] = min(update["price"], stocks[symbol]["min"])
+    stocks[symbol]["max"] = max(stocks[symbol]["values"])
+    stocks[symbol]["min"] = min(stocks[symbol]["values"])
 
     print(fmv_midpoint(symbol))
 
