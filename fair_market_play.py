@@ -52,9 +52,9 @@ def write_and_read(exchange, command):
 
 # round resets every 5 mins, so don't need to reset moving avg
 moving_avgs = {
-    "GOOG": { "value": 0, "count": 0, "buy_amt": 0, "sell_amt": 0 },
-    "MSFT": { "value": 0, "count": 0, "buy_amt": 0, "sell_amt": 0 },
-    "AAPL": { "value": 0, "count": 0, "buy_amt": 0, "sell_amt": 0 }
+    "GOOG": { "value": 0, "count": 0 },
+    "MSFT": { "value": 0, "count": 0 },
+    "AAPL": { "value": 0, "count": 0 }
 }
 
 bought = { "GOOG": 0, "MSFT": 0, "AAPL": 0 }
