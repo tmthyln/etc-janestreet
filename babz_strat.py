@@ -108,13 +108,38 @@ def baba_arbitrage(exchange, book):
 		if option1 > option2:
 
 			write_to_exchange(exchange, {
-				"type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY",
+				"type": "add", "order_id": 10, "symbol": "BABZ", "dir": "BUY",
 				"price": book["BABZ"]["sell"]["price"], "size": option1quant
 			})
-			# convert
-			write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY", "price": 999, "size": size })
 
-			write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BABZ", "dir": "SELL", "price": 999, "size": size })
+			# convert
+			write_to_exchange(exchange, {
+				"type": "convert", "order_id": 12, "symbol": "BABZ",
+				"dir": "BUY", "size": option1quant
+			})
+
+			write_to_exchange(exchange, {
+				"type": "add", "order_id": 14, "symbol": "BABA", "dir": "SELL",
+				"price": book["BABA"]["buy"]["price"], "size": option1quant
+			})
+
+		else:
+
+			write_to_exchange(exchange, {
+				"type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY",
+				"price": book["BABA"]["sell"]["price"], "size": option2quant
+			})
+
+			# convert
+			write_to_exchange(exchange, {
+				"type": "convert", "order_id": 12, "symbol": "BABZ",
+				"dir": "BUY", "size": option1quant
+			})
+
+			write_to_exchange(exchange, {
+				"type": "add", "order_id": 14, "symbol": "BABZ", "dir": "SELL",
+				"price": book["BABZ"]["buy"]["price"], "size": option2quant
+			})
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
