@@ -131,7 +131,7 @@ def fme_trade(exchange, update):
     buy_this_round = int(max(0, (90 - stocks[symbol]["buy_amt"]) // 10 + 1))
     sell_this_round = int(max(0, (90 - stocks[symbol]["sell_amt"]) // 10 + 1))
 
-    moving = True
+    moving = False
 
     # max/min fmv update
     if moving:
