@@ -206,15 +206,24 @@ def main():
 
         # call bond strat once
         count = count + 1
-        #if count == 1:
+        if count == 1:
+        	write_to_exchange(exchange, {
+				"type": "add", "order_id": 10, "symbol": "BABA", "dir": "BUY",
+				"price": book["BABA"]["sell"]["price"], "size": option1quant
+			})
+			write_to_exchange(exchange, {
+				"type": "convert", "order_id": 12, "symbol": "BABZ", "dir": "BUY", "size": option1quant
+			})
             #bond_strategy(exchange)
 
         exchange_reply = read_from_exchange(exchange)
         print("The exchange replied:", exchange_reply, file=sys.stderr)
 
         # continuous stock strat
+        """
         if update_book(exchange_reply, main_book):
         	baba_arbitrage(exchange, main_book)
+		"""
         print(main_book)
 
     """
