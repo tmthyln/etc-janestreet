@@ -69,22 +69,22 @@ import sys
 # initialize buy value to very low - i.e. market buys for low
 # initialize sell value to very high - i.e. market sells for very high
 main_book = {
-    "BABZ": { "buy": { "price": sys.minint, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } },
-    "BABA": { "buy": { "price": sys.minint, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } }
+    "BABZ": { "buy": { "price": -sys.maxint - 1, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } },
+    "BABA": { "buy": { "price": -sys.maxint - 1, "quantity": 0 }, "sell": { "price": sys.maxint, "quantity": 0 } }
 }
 
 def update_book(info, book):
-	if book["type"] == "book":
+	if info["type"] == "book":
 
-		symbol = book["symbol"]
+		symbol = info["symbol"]
 		if symbol not in ["BABA", "BABZ"]: return
 
-		if "buy" in main_book[symbol]:
-			main_book[symbol]["buy"]["price"] = book["buy"][0]
-			main_book[symbol]["buy"]["quantity"] = book["buy"][1]
-		if "sell" in main_book[symbol]:
-			main_book[symbol]["sell"]["price"] = book["sell"][0]
-			main_book[symbol]["sell"]["quantity"] = book["sell"][1]
+		if "buy" in book[symbol]:
+			book[symbol]["buy"]["price"] = info["buy"][0]
+			book[symbol]["buy"]["quantity"] = info["buy"][1]
+		if "sell" in book[symbol]:
+			book[symbol]["sell"]["price"] = info["sell"][0]
+			book[symbol]["sell"]["quantity"] = info["sell"][1]
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
