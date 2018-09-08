@@ -58,11 +58,15 @@ history = {
 # our orders
 order_hist = {}
 curr_order = 0
-def new_order(order_type, ticker):
+def new_order(order_type, ticker, price):
     global curr_order, order_hist
     curr_order = curr_order + 1
-    order_hist[curr_order] = { "type": order_type, "ticker": ticker }
+    order_hist[curr_order] = { "type": order_type, "price": price }
     return curr_order
+
+# list of positions to convert on
+need_to_process = [] # need to wait for these orders to be fulfilled
+convert = [] # need to either buy or sell BABZ ==> cash out
 
 # our positions
 # just counts how many shares we are in
@@ -73,7 +77,15 @@ positions = {
 
 def track(exchange, update):
 
-    global history, orders
+    global history, order_hist
+
+    # get updates on our order requests
+    if update["type"] == "ack" and update["order_id"] in need_to_process: # successful order
+        
+        order_id = update["order_id"]
+        convert.append(order_id)
+        need_to_process.remove(order_id)
+
 
     # real time market requests
     if update["type"] == "book" and update["symbol"] in ["BABZ", "BABA"]:
@@ -92,7 +104,7 @@ def track(exchange, update):
 
 def trade(exchange):
 
-    global history, orders
+    global history, need_to_process, convert, order_hist
 
     if len(history["BABZ"]["buy"]) != 20 and len(history["BABA"]["buy"]) != 20 and len(history["BABZ"]["sell"]) != 20 and len(history["BABA"]["sell"]) != 20: return
 
@@ -103,8 +115,47 @@ def trade(exchange):
     BABZ_sell = sum(history["BABZ"]["sell"]) / len(history["BABZ"]["sell"])
 
     # verify differences
-    print("BABA buy: ", BABZ_sell - BABA_buy)
-    print("BABA sell: ", BABA_sell - BABZ_buy)
+    #print("BABA buy: ", BABZ_sell - BABA_buy)
+    #print("BABA sell: ", BABA_sell - BABZ_buy)
+
+    # execute trades
+
+    # initial trade to buy or sell BABA
+    buy_order_id = new_order("BUY", "BABA", BABA_buy + 1)
+    sell_order_id = new_order("SELL", "BABA", BABA_sell - 1)
+    write_to_exchange(exchange, { 
+        "type": "add", "order_id": buy_order_id, "symbol": "BABA",
+        "dir": "BUY", "price": BABA_buy + 1, "size": 1 # +1 to gauruntee that someone will sell
+    })
+    write_to_exchange(exchange, { 
+        "type": "add", "order_id": sell_order_id, "symbol": "BABA",
+        "dir": "BUY", "price": BABA_sell - 1, "size": 1 # -1 to gauruntee that someone will buy
+    })
+    need_to_process.append(buy_order_id)
+    need_to_process.append(sell_order_id)
+
+
+    # todo: convert
+    while len(convert) > 0:
+        
+        print("CASHING OUT")
+
+        order_id = convert.pop()
+        order_type = order_hist[order_id]
+        price = order_hist[order_id]
+        del order_hist[order_id]
+
+        if order_type == "BUY": # we bought BABA, so we need to to sell BABZ and convert our BABA to BABZ
+            write_to_exchange(exchange, { 
+                "type": "add", "order_id": 10, "symbol": "BABZ",
+                "dir": "SELL", "price": price - 1, "size": 1 # -1 to gauruntee that someone will buy
+            })
+        elif order_type == "SELL": # we sold BABA, so we need to buy BABZ and convert our BABA to BABZ
+            write_to_exchange(exchange, { 
+                "type": "add", "order_id": 10, "symbol": "BABZ",
+                "dir": "BUY", "price": price + 1, "size": 1 # +1 to gauruntee that someone will sell
+            })
+
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
