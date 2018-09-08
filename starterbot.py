@@ -54,7 +54,8 @@ def bond_strategy():
     # always buy bond for < 1000 and sell bond for > 1000
     order_id = 1
     #size = 1
-    return {"type": "add", "order_id": order_id, "symbol": "BOND", "dir": "BUY", "price": 999, "size": 1}
+    PRINT("BOND STRATEGY ------------------")
+    return { "type": "add", "order_id": order_id, "symbol": "BOND", "dir": "BUY", "price": 999, "size": 1 }
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
