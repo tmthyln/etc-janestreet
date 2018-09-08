@@ -69,21 +69,21 @@ main_book = {
 }
 
 def update_book(info, book):
-    if book[u"type"] == "book":
+    if info["type"] == "book":
 
-        symbol = book["symbol"]
+        symbol = info["symbol"]
 
         # sell - get lowest selling price on our book
-        for order in book["sell"]:
-            if book["sell"][0] < main_book[symbol]["sell"]["price"]:
-                main_book[symbol]["sell"]["price"] = book["sell"][0]
-                main_book[symbol]["sell"]["quantity"] = book["sell"][1]
+        for order in info["sell"]:
+            if info["sell"][0] < book[symbol]["sell"]["price"]:
+                book[symbol]["sell"]["price"] = info["sell"][0]
+                book[symbol]["sell"]["quantity"] = info["sell"][1]
 
         # buy - get highest buy price on our book
-        for order in book["buy"]:
-            if book["buy"][0] > main_book[symbol]["buy"]["price"]:
-                main_book[symbol]["buy"]["price"] = book["buy"][0]
-                main_book[symbol]["buy"]["quantity"] = book["buy"][1]
+        for order in info["buy"]:
+            if info["buy"][0] > book[symbol]["buy"]["price"]:
+                book[symbol]["buy"]["price"] = info["buy"][0]
+                book[symbol]["buy"]["quantity"] = info["buy"][1]
 
 def portfolio_balance(exchange, portfolio):
     # preform trades
