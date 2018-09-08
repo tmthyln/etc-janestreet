@@ -98,7 +98,7 @@ def update_book(info, book):
 def baba_arbitrage(exchange, book):
 
 	option1quant = min(book["BABZ"]["sell"]["quantity"], book["BABA"]["buy"]["quantity"])
-	option1quant = min(book["BABA"]["sell"]["quantity"], book["BABZ"]["buy"]["quantity"])
+	option2quant = min(book["BABA"]["sell"]["quantity"], book["BABZ"]["buy"]["quantity"])
 
 	option1 = (book["BABZ"]["sell"]["price"] - book["BABA"]["buy"]["price"]) * option1quant - 10
 	option2 = (book["BABA"]["sell"]["price"] - book["BABZ"]["buy"]["price"]) * option2quant - 10
