@@ -66,7 +66,7 @@ def new_order(order_type, ticker, price):
 
 # list of positions to convert on
 need_to_process = [] # need to wait for these orders to be fulfilled
-convert = [] # need to either buy or sell BABZ
+convert = [] # need to either buy or sell BABZ ==> cash out
 
 # our positions
 # just counts how many shares we are in
@@ -83,10 +83,8 @@ def track(exchange, update):
     if update["type"] == "ack" and update["order_id"] in need_to_process: # successful order
         
         order_id = update["order_id"]
-        order_type = order_hist[order_id]["type"]
-        convert.append([order_type]) # depending on order type, will buy or sell BABZ
+        convert.append(order_id)
         need_to_process.remove(order_id)
-        del order_hist[order_id]
 
 
     # real time market requests
@@ -106,7 +104,7 @@ def track(exchange, update):
 
 def trade(exchange):
 
-    global history, need_to_process, convert
+    global history, need_to_process, convert, order_hist
 
     if len(history["BABZ"]["buy"]) != 20 and len(history["BABA"]["buy"]) != 20 and len(history["BABZ"]["sell"]) != 20 and len(history["BABA"]["sell"]) != 20: return
 
@@ -133,13 +131,20 @@ def trade(exchange):
         "type": "add", "order_id": sell_order_id, "symbol": "BABA",
         "dir": "BUY", "price": BABA_sell - 1, "size": 1 # -1 to gauruntee that someone will buy
     })
-    need_to_process.append([buy_order_id, BABA_buy + 1])
-    need_to_process.append([sell_order_id, BABA_sell - 1])
+    need_to_process.append(buy_order_id)
+    need_to_process.append(sell_order_id)
 
 
     # todo: convert
     while len(convert) > 0:
-        order_type, price = convert.pop()
+        
+        print("CASHING OUT")
+
+        order_id = convert.pop()
+        order_type = order_hist[order_id]
+        price = order_hist[order_id]
+        del order_hist[order_id]
+
         if order_type == "BUY": # we bought BABA, so we need to to sell BABZ and convert our BABA to BABZ
             write_to_exchange(exchange, { 
                 "type": "add", "order_id": 10, "symbol": "BABZ",
