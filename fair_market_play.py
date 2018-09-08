@@ -60,7 +60,7 @@ moving_avgs = {
 def trade(exchange, update):
 
     # do trade
-    if update["type"] == "book" and update["symbol"] in ["GOOG", "MSFT", "AAPL"]:
+    if update["type"] == "book" and update["symbol"] in ["GOOG", "MSFT", "AAPL"] and len(update["buy"] + update["sell"]) > 0:
 
         symbol = update["symbol"]
 
