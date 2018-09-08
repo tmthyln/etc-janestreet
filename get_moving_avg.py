@@ -57,7 +57,7 @@ moving_avgs = {
     "AAPL": { "value": 0, "count": 0 }
 }
 
-def update_data(update):
+def update_data(exchange, update):
 
     fudge = 0
 
@@ -66,10 +66,15 @@ def update_data(update):
         symbol = update["symbol"]
         print(update["sell"][0])
         print(moving_avgs[symbol])
-        if update["sell"][0][0] < moving_avgs[symbol]["value"] - fudge:
+        if update["sell"][0][0] < moving_avgs[symbol]["value"]:
             write_to_exchange(exchange, {
                 "type": "add", "order_id": 10, "symbol": symbol,
                 "dir": "BUY", "price": update["sell"][0][0], "size": update["sell"][0][1]
+            })
+        elif update["sell"][0][0] > moving_avgs[symbol]["value"]:
+             write_to_exchange(exchange, {
+                "type": "add", "order_id": 10, "symbol": symbol,
+                "dir": "SELL", "price": update["sell"][0][0], "size": update["sell"][0][1]
             })
 
     # update data
@@ -97,7 +102,7 @@ def main():
     while True:
 
         exchange_reply = read_from_exchange(exchange)
-        update_data(exchange_reply)
+        update_data(exchange, exchange_reply)
         #print(moving_avgs)
         #print("The exchange replied:", exchange_reply, file=sys.stderr)
 
