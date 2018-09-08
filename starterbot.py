@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import argparse
+import utils
 
 # ~~~~~==============   HOW TO RUN   ==============~~~~~
 # 1) Configure things in CONFIGURATION section
@@ -18,7 +18,7 @@ import json
 team_name="SEEKINGALPHA"
 # This variable dictates whether or not the bot is connecting to the prod
 # or test exchange. Be careful with this switch!
-test_mode = False
+test_mode = False # utils.should_test()
 
 # This setting changes which test exchange is connected to.
 # 0 is prod-like
@@ -93,13 +93,4 @@ def main():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('integers', metavar='N', type=int, nargs='+',
-                        help='an integer for the accumulator')
-    parser.add_argument('-t', dest='test_mode', action='store_const',
-                        const=sum, default=max,
-                        help='sum the integers (default: find the max)')
-
-    args = parser.parse_args()
-
     main()
