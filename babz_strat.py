@@ -80,11 +80,20 @@ def update_book(info, book):
 		if symbol not in ["BABA", "BABZ"]: return
 
 		if "buy" in info:
-			book[symbol]["buy"]["price"] = info["buy"][0]
-			book[symbol]["buy"]["quantity"] = info["buy"][1]
+			max_buy = -sys.maxint - 1
+			for order in info["buy"]
+				# get max of current set of orders
+				if order[0] > max_buy:
+					book[symbol]["buy"]["price"] = order[0]
+					book[symbol]["buy"]["quantity"] = order[1]
+					max_buy = order[0]
 		if "sell" in info:
-			book[symbol]["sell"]["price"] = info["sell"][0]
-			book[symbol]["sell"]["quantity"] = info["sell"][1]
+			min_sell = sys.maxint
+			for order in info["sell"]
+				if order[0] < min_sell
+					book[symbol]["sell"]["price"] = order[0]
+					book[symbol]["sell"]["quantity"] = order[1]
+					min_sell = order[0]
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
