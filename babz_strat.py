@@ -79,10 +79,10 @@ def update_book(info, book):
 		symbol = info["symbol"]
 		if symbol not in ["BABA", "BABZ"]: return
 
-		if "buy" in info[symbol]:
+		if "buy" in info:
 			book[symbol]["buy"]["price"] = info["buy"][0]
 			book[symbol]["buy"]["quantity"] = info["buy"][1]
-		if "sell" in info[symbol]:
+		if "sell" in info:
 			book[symbol]["sell"]["price"] = info["sell"][0]
 			book[symbol]["sell"]["quantity"] = info["sell"][1]
 
