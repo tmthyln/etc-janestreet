@@ -43,7 +43,7 @@ def read_from_exchange(exchange):
 
 # ~~~~~============== HELPER FUNCTIONS ==============~~~~~
 
-def write_and_read(command):
+def write_and_read(exchange, command):
     write_to_exchange(exchange, command)
     exchange_reply = read_from_exchange(exchange)
     print("The exchange replied:", exchange_reply, file=sys.stderr)
@@ -60,8 +60,8 @@ def bond_strategy():
 
 def main():
     exchange = connect()
-    write_and_read({"type": "hello", "team": team_name.upper()})
-    write_and_read(bond_strategy())
+    write_and_read(exchange, {"type": "hello", "team": team_name.upper()})
+    write_and_read(exchange, bond_strategy())
 
     """
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
