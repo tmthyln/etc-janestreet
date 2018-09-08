@@ -53,8 +53,10 @@ def write_and_read(exchange, command):
 def bond_strategy(exchange):
     # always buy bond for < 1000 and sell bond for > 1000
     print("BOND STRATEGY ------------------")
-    write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BOND", "dir": "BUY", "price": 999, "size": 10 })
-    write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": 10 })
+ 
+    size = 100
+    write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": "BOND", "dir": "BUY", "price": 999, "size": size })
+    write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": "BOND", "dir": "SELL", "price": 1001, "size": size })
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
