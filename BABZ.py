@@ -74,8 +74,8 @@ def track(exchange, update):
         history[symbol]["sell"].extend([p for p,q in update["sell"]])
 
         # keep only 20 most recent
-        history[symbol]["buy"] = history[symbol]["buy"][:-20]
-        history[symbol]["sell"] = history[symbol]["sell"][:-20]
+        history[symbol]["buy"] = history[symbol]["buy"][-20:]
+        history[symbol]["sell"] = history[symbol]["sell"][-20:]
 
         print(n_buy, n_sell)
         print(len(history[symbol]))
