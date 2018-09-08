@@ -11,6 +11,7 @@ import sys
 import socket
 import json
 import random
+from collections import deque
 
 # ~~~~~============== CONFIGURATION  ==============~~~~~
 # replace REPLACEME with your team name!
@@ -65,11 +66,17 @@ stocks = {
 }
 
 
+stocks_id = 99999
+orders = deque()
+
+
 def fmv_midpoint(symbol):
     return stocks[symbol]["min"] + (stocks[symbol]["max"] - stocks[symbol]["min"]) / 2
 
 
 def fme_trade(exchange, update):
+    global stocks_id
+
     if update["type"] != 'trade':
         return
     if update['symbol'] not in ["GOOG", "MSFT", "AAPL"]:
@@ -78,8 +85,8 @@ def fme_trade(exchange, update):
     # update data
     symbol = update["symbol"]
 
-    buy_this_round = (100 - stocks[symbol]["buy_amt"]) // 6
-    sell_this_round = (100 - stocks[symbol]["sell_amt"]) // 6
+    buy_this_round = (100 - stocks[symbol]["buy_amt"]) // 10
+    sell_this_round = (100 - stocks[symbol]["sell_amt"]) // 10
 
     # update max/min
     stocks[symbol]["max"] = max(update["price"], stocks[symbol]["max"])
@@ -87,14 +94,26 @@ def fme_trade(exchange, update):
 
     print(fmv_midpoint(symbol))
 
-    if buy_this_round > 0 and random.random() < 0.25:
-        write_to_exchange(exchange, { "type": "add", "order_id": 10, "symbol": symbol, "dir": "BUY", "price": fmv_midpoint(symbol) - 2, "size": 1})
+    # buy or sell as necessary
+    if buy_this_round > 0 and random.random() < 1.0:
+        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "BUY", "price": fmv_midpoint(symbol) - 2, "size": 1})
+        orders.append(stocks_id)
         stocks[symbol]["buy_amt"] += buy_this_round
+        stocks_id += 1
         print('actually bought')
-    if sell_this_round > 0 and random.random() < 0.25:
-        write_to_exchange(exchange, { "type": "add", "order_id": 12, "symbol": symbol, "dir": "SELL", "price": fmv_midpoint(symbol) + 2, "size": 1})
+    if sell_this_round > 0 and random.random() < 1.0:
+        write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "SELL", "price": fmv_midpoint(symbol) + 2, "size": 1})
+        orders.append(stocks_id)
         stocks[symbol]["sell_amt"] += sell_this_round
+        stocks_id += 1
         print('actually sold')
+
+    # cancel orders more than 15 old
+    for order in orders:
+        if order + 15 < stocks_id:
+            write_to_exchange(exchange, {'type': 'cancel', 'order_id': order})
+        else:
+            break
 
 
 def fme_update(update):
