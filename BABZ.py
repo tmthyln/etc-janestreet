@@ -74,28 +74,42 @@ convert = [] # need to either buy or sell BABZ ==> cash out
 # just counts how many shares we are in
 positions = { "BABZ": 0,"BABA": 0 }
 
-def track(update):
+# NOTE: constant order_id for chain
+order_next = {}
 
-    global history, order_hist
+def track(exchange, update):
+
+    global history, order_next
 
     # get updates on our order requests
-    if update["type"] == "ack" and update["order_id"] in need_to_process: # successful order
+    if update["type"] == "ack": # successful order
         
         order_id = update["order_id"]
-        symbol = order_hist[order_id]["symbol"]
 
-        order_hist[order_id]["fulfilled"] = True
-        cashout.append(order_id)
+        if order_next[order_id] == "BUY_BABA":
+            print("BUY_BABA")
+            BABA_buy = sum(history["BABA"]["buy"]) / len(history["BABA"]["buy"])
+            write_to_exchange(exchange, { 
+                "type": "add", "order_id": order_id, "symbol": "BABA",
+                "dir": "BUY", "price": BABA_buy + 1, "size": 10
+            })
 
-        need_to_process.remove(order_id)
+        if order_next[order_id] == "CONVERT_TO_BABZ":
+            print("CONVERT_TO_BABZ")
+            write_to_exchange(exchange, { "type": "convert", "order_id": order_id, 
+                "symbol": "BABA", "dir": "BUY", "size": 10 })
+            order_next[order_id] == "SELL_BABZ"
 
-        print("SUCCESSFUL ORDER: ", order_id, symbol)
+        if order_next[order_id] == "SELL_BABZ":
+            print("SELL_BABZ")
+            BABZ_sell = sum(history["BABZ"]["sell"]) / len(history["BABZ"]["sell"])
+            write_to_exchange(exchange, { 
+                "type": "add", "order_id": order_id, "symbol": "BABZ",
+                "dir": "SELL", "price": BABZ_sell - 1, "size": 10
+            })
+            order_next[order_id] == "BUY_BABA"
 
-        #convert.append(order_id)
-        #need_to_process.remove(order_id)
-
-        #if order_hist[order_id]["type"] == "BUY": positions[symbol] = positions[symbol] + 1
-        #elif order_hist[order_id]["type"] == "SELL": positions[symbol] = positions[symbol] - 1
+        if order_next[order_id] == "DONE": del order_next[order_id]
 
 
     # update history database with real time market requests
@@ -118,7 +132,7 @@ def trade(exchange):
 
     #global history, positions, order_hist, need_to_process, convert
 
-    global history, order_hist
+    global history, order_hist, order_next
 
     # wait till we have history
     if len(history["BABZ"]["buy"]) != 20 and len(history["BABA"]["buy"]) != 20 and len(history["BABZ"]["sell"]) != 20 and len(history["BABA"]["sell"]) != 20: return
@@ -135,7 +149,9 @@ def trade(exchange):
             "dir": "BUY", "price": buy_price, "size": 10
         })
         need_to_process.append(buy_order_id)
+        order_next[buy_order_id] = "CONVERT_TO_BABZ"
 
+    """
     # end of buying
 
     while len(cashout) > 0:
@@ -153,7 +169,7 @@ def trade(exchange):
             "type": "add", "order_id": 10, "symbol": "BABZ",
             "dir": "SELL", "price": BABZ_sell - 1, "size": 10
         })
-
+    """
 
 
 
@@ -230,6 +246,9 @@ def trade(exchange):
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
 def main():
+
+    global history
+
     exchange = connect()
 
     # Hello
@@ -237,11 +256,26 @@ def main():
     exchange_reply = read_from_exchange(exchange)
     print("The exchange replied:", exchange_reply, file=sys.stderr)
 
+    count = 0
+
     while True:
 
         update = read_from_exchange(exchange)
-        track(update)
-        trade(exchange)
+        track(exchange, update)
+
+        # wait till we have history
+        if count == 0 and len(history["BABZ"]["buy"]) == 20 and len(history["BABA"]["buy"]) == 20 and len(history["BABZ"]["sell"]) == 20 and len(history["BABA"]["sell"]) == 20:
+            # execute first BABA buy
+            print("BUY_BABA")
+            order_id = 1
+            order_next[order_id] = "CONVERT_TO_BABZ"
+            BABA_buy = sum(history["BABA"]["buy"]) / len(history["BABA"]["buy"])
+            write_to_exchange(exchange, { 
+                "type": "add", "order_id": order_id, "symbol": "BABA",
+                "dir": "BUY", "price": BABA_buy + 1, "size": 10
+            })
+
+        #trade(exchange)
 
     """
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
