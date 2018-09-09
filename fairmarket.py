@@ -187,7 +187,7 @@ def fme_trade(exchange, update):
 
     # cancel orders more than x orders old
     for order in orders:
-        if order + 20 < stocks_id:
+        if order + 10 < stocks_id:
             write_to_exchange(exchange, {'type': 'cancel', 'order_id': order})
         else:
             break
