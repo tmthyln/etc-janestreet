@@ -81,6 +81,7 @@ def track(exchange, update):
 
     global history, order_next
 
+    if update["type"] == "reject" or update["type"] == "error": print(update)
     # get updates on our order requests
     if update["type"] == "ack": # successful order
         
