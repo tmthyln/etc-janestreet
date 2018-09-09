@@ -61,8 +61,10 @@ curr_order = 0
 def new_order(order_type, symbol, price):
     global curr_order, order_hist
     curr_order = curr_order + 1
-    order_hist[curr_order] = { "type": order_type, "price": price, "symbol": symbol }
+    order_hist[curr_order] = { "type": order_type, "price": price, "symbol": symbol, "fulfilled": False }
     return curr_order, price
+
+cashout = []
 
 # list of positions to convert on
 need_to_process = [] # need to wait for these orders to be fulfilled
@@ -72,23 +74,26 @@ convert = [] # need to either buy or sell BABZ ==> cash out
 # just counts how many shares we are in
 positions = { "BABZ": 0,"BABA": 0 }
 
-def track(exchange, update):
+def track(update):
 
     global history, order_hist
 
     # get updates on our order requests
-    if update["type"] == "ack" and update["order_id"] in need_to_process: # successful order
+    if update["type"] == "ack": # successful order
         
         order_id = update["order_id"]
         symbol = order_hist[order_id]["symbol"]
 
+        order_hist[order_id]["fulfilled"] = True
+        cashout.append(order_id)
+
         print("SUCCESSFUL ORDER: ", order_id, symbol)
 
-        convert.append(order_id)
-        need_to_process.remove(order_id)
+        #convert.append(order_id)
+        #need_to_process.remove(order_id)
 
-        if order_hist[order_id]["type"] == "BUY": positions[symbol] = positions[symbol] + 1
-        elif order_hist[order_id]["type"] == "SELL": positions[symbol] = positions[symbol] - 1
+        #if order_hist[order_id]["type"] == "BUY": positions[symbol] = positions[symbol] + 1
+        #elif order_hist[order_id]["type"] == "SELL": positions[symbol] = positions[symbol] - 1
 
 
     # update history database with real time market requests
@@ -106,12 +111,50 @@ def track(exchange, update):
         history[symbol]["buy"] = history[symbol]["buy"][-20:]
         history[symbol]["sell"] = history[symbol]["sell"][-20:]
 
+# only BABA buy, BABZ sell strategy
 def trade(exchange):
 
-    global history, positions, order_hist, need_to_process, convert
+    #global history, positions, order_hist, need_to_process, convert
 
+    global history, order_hist
+
+    # wait till we have history
     if len(history["BABZ"]["buy"]) != 20 and len(history["BABA"]["buy"]) != 20 and len(history["BABZ"]["sell"]) != 20 and len(history["BABA"]["sell"]) != 20: return
 
+    # important numbers
+    BABA_buy = sum(history["BABA"]["buy"]) / len(history["BABA"]["buy"])
+    BABZ_sell = sum(history["BABZ"]["sell"]) / len(history["BABZ"]["sell"])
+
+    if len(cashout) == 0:
+
+        buy_order_id, buy_price = new_order("BUY", "BABA", BABA_buy + 1)
+        write_to_exchange(exchange, { 
+            "type": "add", "order_id": buy_order_id, "symbol": "BABA",
+            "dir": "BUY", "price": buy_price, "size": 10
+        })
+
+    # end of buying
+
+    while len(cashout) > 0:
+
+        order_id = cashout.pop()
+
+        # convert
+
+         write_to_exchange(exchange, {
+            "type": "convert", "order_id": 8, "symbol": "BABA", "dir": "SELL", "size": 10
+        })
+
+        # sell
+        write_to_exchange(exchange, { 
+            "type": "add", "order_id": 10, "symbol": "BABZ",
+            "dir": "SELL", "price": BABZ_sell - 1, "size": 10
+        })
+
+
+
+
+    """
     # no more arbitrage!
     if positions["BABA"] < 8:
 
@@ -134,14 +177,14 @@ def trade(exchange):
             "dir": "BUY", "price": buy_price, "size": 1 # +1 to gauruntee that someone will sell
         })
         need_to_process.append(buy_order_id)
-        """
+
         sell_order_id, sell_price = new_order("SELL", "BABA", BABA_sell - 1)
         write_to_exchange(exchange, { 
             "type": "add", "order_id": sell_order_id, "symbol": "BABA",
             "dir": "BUY", "price": sell_price, "size": 1 # -1 to gauruntee that someone will buy
         })
         need_to_process.append(sell_order_id)
-        """
+
 
         #print("DID SOMETHING WITH BABA", buy_order_id, sell_order_id)
         print("DID SOMETHING WITH BABA", buy_order_id)
@@ -165,6 +208,10 @@ def trade(exchange):
                 "type": "add", "order_id": 10, "symbol": "BABZ",
                 "dir": "SELL", "price": price - 1, "size": 1 # -1 to gauruntee that someone will buy
             })
+            write_to_exchange(exchange, { 
+                "type": "convert", "order_id": 12, "symbol": "BABA",
+                "dir": "SELL", "price": price - 1, "size": 1 # -1 to gauruntee that someone will buy
+            })
         elif order_type == "SELL": # we sold BABA, so we need to buy BABZ and convert our BABA to BABZ
             write_to_exchange(exchange, { 
                 "type": "add", "order_id": 10, "symbol": "BABZ",
@@ -172,6 +219,7 @@ def trade(exchange):
             })
 
     # end of alg ~
+    """
 
         
 
@@ -188,8 +236,8 @@ def main():
 
     while True:
 
-        exchange_reply = read_from_exchange(exchange)
-        track(exchange, exchange_reply)
+        update = read_from_exchange(exchange)
+        track(update)
         trade(exchange)
 
     """
