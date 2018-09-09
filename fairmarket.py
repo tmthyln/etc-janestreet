@@ -167,8 +167,8 @@ def fme_trade(exchange, update):
     curr_fmv = sum(stocks[symbol]["fmv"]) / len(stocks[symbol]["fmv"])
 
     # buy or sell as necessary
-    buy_margin = 2 # + stocks[symbol]["net_mov"]
-    sell_margin = 2 # + stocks[symbol]["net_mov"]
+    buy_margin = 0 # + stocks[symbol]["net_mov"]
+    sell_margin = 0 # + stocks[symbol]["net_mov"]
 
     # amt = int(buy_this_round / abs(update["price"] - curr_fmv))     # prob don't need
 
