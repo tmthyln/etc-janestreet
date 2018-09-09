@@ -85,6 +85,7 @@ def track(exchange, update):
     if update["type"] == "ack": # successful order
         
         order_id = update["order_id"]
+        print("GOT UPDATE: ", order_id)
 
         if order_next[order_id] == "BUY_BABA":
             print("BUY_BABA")
