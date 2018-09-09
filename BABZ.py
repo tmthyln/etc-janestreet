@@ -274,6 +274,7 @@ def main():
                 "type": "add", "order_id": order_id, "symbol": "BABA",
                 "dir": "BUY", "price": BABA_buy + 1, "size": 10
             })
+            count = count + 1
 
         #trade(exchange)
 
