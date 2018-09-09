@@ -79,13 +79,15 @@ def track(update):
     global history, order_hist
 
     # get updates on our order requests
-    if update["type"] == "ack": # successful order
+    if update["type"] == "ack" and update["order_id"] in need_to_process: # successful order
         
         order_id = update["order_id"]
         symbol = order_hist[order_id]["symbol"]
 
         order_hist[order_id]["fulfilled"] = True
         cashout.append(order_id)
+
+        need_to_process.remove(order_id)
 
         print("SUCCESSFUL ORDER: ", order_id, symbol)
 
@@ -132,6 +134,7 @@ def trade(exchange):
             "type": "add", "order_id": buy_order_id, "symbol": "BABA",
             "dir": "BUY", "price": buy_price, "size": 10
         })
+        need_to_process.append(buy_order_id)
 
     # end of buying
 
@@ -142,7 +145,7 @@ def trade(exchange):
         # convert
 
         write_to_exchange(exchange, {
-            "type": "convert", "order_id": 8, "symbol": "BABA", "dir": "SELL", "size": 10
+            "type": "convert", "order_id": 8, "symbol": "BABA", "dir": "BUY", "size": 10
         })
 
         # sell
