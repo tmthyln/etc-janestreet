@@ -170,6 +170,8 @@ def fme_trade(exchange, update):
     buy_margin = 4
     sell_margin = 2
 
+    print(update["price"] - curr_fmv)
+
     if buy_this_round > 0 and random.random() < 0.8:
         write_to_exchange(exchange, { "type": "add", "order_id": stocks_id, "symbol": symbol, "dir": "BUY", "price": curr_fmv - buy_margin, "size": 1})
         orders.append(stocks_id)
