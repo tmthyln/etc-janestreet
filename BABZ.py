@@ -95,7 +95,7 @@ def track(exchange, update):
                 "type": "add", "order_id": order_id + 1, "symbol": "BABA",
                 "dir": "BUY", "price": BABA_buy + 1, "size": 10
             })
-            order_next[order_id + 1] == "SELL_BABZ"
+            order_next[(order_id + 1)] == "SELL_BABZ"
 
         if order_next[order_id] == "CONVERT_TO_BABZ":
             print("CONVERT_TO_BABZ")
