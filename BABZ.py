@@ -141,7 +141,7 @@ def trade(exchange):
 
         # convert
 
-         write_to_exchange(exchange, {
+        write_to_exchange(exchange, {
             "type": "convert", "order_id": 8, "symbol": "BABA", "dir": "SELL", "size": 10
         })
 
