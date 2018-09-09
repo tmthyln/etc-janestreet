@@ -148,7 +148,7 @@ def fme_trade(exchange, update):
                 stocks[symbol]['net_mov'] -= 1
 
         # maintain moving window
-        if len(stocks[symbol]["values"]) > 2000:
+        if len(stocks[symbol]["values"]) > 250:
             stocks[symbol]["values"].popleft()
 
         # update max/min
