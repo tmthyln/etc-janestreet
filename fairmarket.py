@@ -161,7 +161,7 @@ def fme_trade(exchange, update):
     # update predicted fmv
     stocks[symbol]["fmv"].append(fmv_midpoint(symbol))
 
-    if len(stocks[symbol]["fmv"]) > 10:
+    if len(stocks[symbol]["fmv"]) > 1:
         stocks[symbol]["fmv"].popleft()
 
     curr_fmv = sum(stocks[symbol]["fmv"]) / len(stocks[symbol]["fmv"])
