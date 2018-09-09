@@ -183,7 +183,7 @@ def fme_trade(exchange, update):
         stocks_id += 1
         print('actually sold')
 
-    print("Midpoint: " + str(fmv_midpoint(symbol)))
+    print("Midpoint: " + str(curr_fmv))
 
     # cancel orders more than x orders old
     for order in orders:
