@@ -92,24 +92,25 @@ def track(exchange, update):
             print("BUY_BABA")
             BABA_buy = sum(history["BABA"]["buy"]) / len(history["BABA"]["buy"])
             write_to_exchange(exchange, { 
-                "type": "add", "order_id": order_id, "symbol": "BABA",
+                "type": "add", "order_id": order_id + 1, "symbol": "BABA",
                 "dir": "BUY", "price": BABA_buy + 1, "size": 10
             })
+            order_next[order_id + 1] == "SELL_BABZ"
 
         if order_next[order_id] == "CONVERT_TO_BABZ":
             print("CONVERT_TO_BABZ")
-            write_to_exchange(exchange, { "type": "convert", "order_id": order_id, 
+            write_to_exchange(exchange, { "type": "convert", "order_id": order_id + 1, 
                 "symbol": "BABA", "dir": "SELL", "size": 10 })
-            order_next[order_id] == "SELL_BABZ"
+            order_next[order_id + 1] == "SELL_BABZ"
 
         if order_next[order_id] == "SELL_BABZ":
             print("SELL_BABZ")
             BABZ_sell = sum(history["BABZ"]["sell"]) / len(history["BABZ"]["sell"])
             write_to_exchange(exchange, { 
-                "type": "add", "order_id": order_id, "symbol": "BABZ",
+                "type": "add", "order_id": order_id + 1, "symbol": "BABZ",
                 "dir": "SELL", "price": BABZ_sell - 1, "size": 10
             })
-            order_next[order_id] == "BUY_BABA"
+            order_next[order_id + 1] == "BUY_BABA"
 
         if order_next[order_id] == "DONE": del order_next[order_id]
 
