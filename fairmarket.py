@@ -148,7 +148,7 @@ def fme_trade(exchange, update):
                 stocks[symbol]['net_mov'] -= 1
 
         # maintain moving window
-        if len(stocks[symbol]["values"]) > 500:
+        if len(stocks[symbol]["values"]) > 1000:
             stocks[symbol]["values"].popleft()
 
         # update max/min
@@ -161,7 +161,7 @@ def fme_trade(exchange, update):
     # update predicted fmv
     stocks[symbol]["fmv"].append(fmv_midpoint(symbol))
 
-    if len(stocks[symbol]["fmv"]) > 75:
+    if len(stocks[symbol]["fmv"]) > 1000:
         stocks[symbol]["fmv"].popleft()
 
     curr_fmv = sum(stocks[symbol]["fmv"]) / len(stocks[symbol]["fmv"])
